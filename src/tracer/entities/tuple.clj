@@ -2,12 +2,12 @@
   (:refer-clojure :exclude [vector?])
   (:require [clojure.spec.alpha :as s]))
 
-(s/def ::tuple (s/coll-of number? :count 4))
+(s/def ::tuple (s/coll-of double? :count 4))
 
-(defn tuple
+(defn- tuple
   "Create a tuple, a 4-element vector of numbers"
   [x y z w]
-  [x y z w])
+  [(double x) (double y) (double z) (double w)])
 
 (s/fdef tuple
   :args (s/cat :x number? :y number? :z number? :w number?)
@@ -25,7 +25,7 @@
 (defn point?
   "Returns true if a1 is a tuple with w=1.0"
   [a1]
-  (= 1.0 (nth a1 3)))
+  (= 1.0 (double (nth a1 3))))
 
 (s/fdef point?
   :args (s/cat :a1 ::tuple)
@@ -56,7 +56,7 @@
                        vector?))
 
 (defn vector
-  "Create a vector, a tuple with w=1.0"
+  "Create a vector, a tuple with w=0.0"
   [x y z]
   (tuple x y z 0.0))
 

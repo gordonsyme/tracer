@@ -9,13 +9,13 @@
                                    (s-test/unstrument)))
 
 (deftest a-tuple-with-w-equal-1-is-a-point
-  (let [a (sut/tuple 4.3 -4.2 3.1 1.0)]
+  (let [a (#'sut/tuple 4.3 -4.2 3.1 1.0)]
     (is (= [4.3 -4.2 3.1 1.0] a))
     (is (sut/point? a))
     (is (not (sut/vector? a)))))
 
 (deftest a-tuple-with-w-equal-0-is-a-vector
-  (let [a (sut/tuple 4.3 -4.2 3.1 0.0)]
+  (let [a (#'sut/tuple 4.3 -4.2 3.1 0.0)]
     (is (= [4.3 -4.2 3.1 0.0] a))
     (is (sut/vector? a))
     (is (not (sut/point? a)))))
