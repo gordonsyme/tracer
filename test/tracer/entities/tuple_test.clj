@@ -1,6 +1,6 @@
 (ns tracer.entities.tuple-test
   (:require [clojure.test :refer (deftest testing is)]
-            [clojure.spec.test.alpha :as s-test]
+            [orchestra.spec.test :as s-test]
             [tracer.entities.tuple :as sut]))
 
 (clojure.test/use-fixtures :once (fn [t]

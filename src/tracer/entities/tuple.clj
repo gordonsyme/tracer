@@ -1,5 +1,5 @@
 (ns tracer.entities.tuple
-  (:refer-clojure :exclude [vector?])
+  (:refer-clojure :exclude [vector? vector])
   (:require [clojure.spec.alpha :as s]))
 
 (s/def ::tuple (s/and (s/coll-of double? :count 4)
@@ -83,7 +83,7 @@
 (defn negate
   "Negate a tuple"
   [a1]
-  (map - a1))
+  (mapv - a1))
 
 (s/fdef negate
   :args (s/cat :a1 ::tuple)
@@ -92,7 +92,7 @@
 (defn mul
   "Multiply a tuple by a scalar"
   [a1 s]
-  (map #(* % s) a1))
+  (mapv #(* % s) a1))
 
 (s/fdef mul
   :args (s/cat :a1 ::tuple :s number?)
@@ -102,7 +102,7 @@
   "Divide a tuple by a scalar."
   [a1 s]
   (let [s (double s)]
-    (map #(/ % s) a1)))
+    (mapv #(/ % s) a1)))
 
 (s/fdef div
   :args (s/cat :a1 ::tuple :s number?)
