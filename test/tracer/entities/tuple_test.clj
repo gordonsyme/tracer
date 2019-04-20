@@ -17,6 +17,13 @@
     (< (Math/abs (- v1 v2))
        0.0001)))
 
+(deftest tuple-component-fns
+  (let [a (#'sut/tuple 4.3 -4.2 3.1 1.0)]
+    (is (= 4.3 (sut/x a)))
+    (is (= -4.2 (sut/y a)))
+    (is (= 3.1 (sut/z a)))
+    (is (= 1.0 (sut/w a)))))
+
 (deftest a-tuple-with-w-equal-1-is-a-point
   (let [a (#'sut/tuple 4.3 -4.2 3.1 1.0)]
     (is (= [4.3 -4.2 3.1 1.0] a))

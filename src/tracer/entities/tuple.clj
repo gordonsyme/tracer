@@ -14,6 +14,34 @@
   :args (s/cat :x number? :y number? :z number? :w number?)
   :ret ::tuple)
 
+(definline x
+  [a1]
+  `(first ~a1))
+(s/fdef x
+  :args (s/cat :a1 ::tuple)
+  :ret double?)
+
+(definline y
+  [a1]
+  `(second ~a1))
+(s/fdef y
+  :args (s/cat :a1 ::tuple)
+  :ret double?)
+
+(definline z
+  [a1]
+  `(nth ~a1 2))
+(s/fdef z
+  :args (s/cat :a1 ::tuple)
+  :ret double?)
+
+(definline w
+  [a1]
+  `(nth ~a1 3))
+(s/fdef w
+  :args (s/cat :a1 ::tuple)
+  :ret double?)
+
 (defn point?
   "Returns true if a1 is a tuple with w=1.0"
   [a1]
@@ -137,12 +165,12 @@
 
 (defn cross
   [v1 v2]
-  (vector (- (* (nth v1 1) (nth v2 2))
-             (* (nth v1 2) (nth v2 1)))
-          (- (* (nth v1 2) (nth v2 0))
-             (* (nth v1 0) (nth v2 2)))
-          (- (* (nth v1 0) (nth v2 1))
-             (* (nth v1 1) (nth v2 0)))))
+  (vector (- (* (y v1) (z v2))
+             (* (z v1) (y v2)))
+          (- (* (z v1) (x v2))
+             (* (x v1) (z v2)))
+          (- (* (x v1) (y v2))
+             (* (y v1) (x v2)))))
 
 (s/fdef cross
   :args (s/cat :v1 ::vector
