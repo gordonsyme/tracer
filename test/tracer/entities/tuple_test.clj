@@ -1,12 +1,9 @@
 (ns tracer.entities.tuple-test
   (:require [clojure.test :refer (deftest testing is)]
-            [orchestra.spec.test :as s-test]
+            [tracer.fixtures :refer (instrument)]
             [tracer.entities.tuple :as sut]))
 
-(clojure.test/use-fixtures :once (fn [t]
-                                   (s-test/instrument)
-                                   (t)
-                                   (s-test/unstrument)))
+(clojure.test/use-fixtures :once instrument)
 
 (defn- approx
   "Compare two tuples approximately"
