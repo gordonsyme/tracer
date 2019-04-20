@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [vector?])
   (:require [clojure.spec.alpha :as s]))
 
-(s/def ::tuple (s/coll-of double? :count 4))
+(s/def ::tuple (s/and (s/coll-of double? :count 4)
+                      clojure.core/vector?))
 
 (defn- tuple
   "Create a tuple, a 4-element vector of numbers"
@@ -11,15 +12,6 @@
 
 (s/fdef tuple
   :args (s/cat :x number? :y number? :z number? :w number?)
-  :ret ::tuple)
-
-(defn add
-  "Add two tuples"
-  [a1 a2]
-  (mapv + a1 a2))
-
-(s/fdef add
-  :args (s/cat :a1 ::tuple :a2 ::tuple)
   :ret ::tuple)
 
 (defn point?
@@ -62,4 +54,74 @@
 
 (s/fdef vector
   :args (s/cat :x number? :y number? :z number?)
+  :ret ::vector)
+
+(defn add
+  "Add two tuples"
+  [a1 a2]
+  (mapv + a1 a2))
+
+(s/fdef add
+  :args (s/or :vector-point (s/cat :a1 ::vector :a2 ::point)
+              :vector-vector (s/cat :a1 ::vector :a2 ::vector)
+              :point-vector (s/cat :a1 ::point :a2 ::vector))
+  :ret (s/or :vector ::vector
+             :point ::point))
+
+(defn sub
+  "Subtract two tuples"
+  [a1 a2]
+  (mapv - a1 a2))
+
+(s/fdef sub
+  :args (s/or :vector-vector (s/cat :a1 ::vector :a2 ::vector)
+              :point-point (s/cat :a1 ::point :a2 ::point)
+              :point-vector (s/cat :a1 ::point :a2 ::vector))
+  :ret (s/or :vector ::vector
+             :point ::point))
+
+(defn negate
+  "Negate a tuple"
+  [a1]
+  (map - a1))
+
+(s/fdef negate
+  :args (s/cat :a1 ::tuple)
+  :ret ::tuple)
+
+(defn mul
+  "Multiply a tuple by a scalar"
+  [a1 s]
+  (map #(* % s) a1))
+
+(s/fdef mul
+  :args (s/cat :a1 ::tuple :s number?)
+  :ret ::tuple)
+
+(defn div
+  "Divide a tuple by a scalar."
+  [a1 s]
+  (let [s (double s)]
+    (map #(/ % s) a1)))
+
+(s/fdef div
+  :args (s/cat :a1 ::tuple :s number?)
+  :ret ::tuple)
+
+(defn magnitude
+  "Compute the magnitude of a vector"
+  [v]
+  (Math/sqrt (reduce + (map #(* % %) v))))
+
+(s/fdef magnitude
+  :args (s/cat :v ::vector)
+  :ret double?)
+
+(defn normalise
+  [v]
+  (let [m (magnitude v)]
+    (mapv #(/ % m) v)))
+
+(s/fdef normalise
+  :args (s/cat :v ::vector)
   :ret ::vector)
