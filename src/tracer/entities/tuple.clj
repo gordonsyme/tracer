@@ -125,3 +125,26 @@
 (s/fdef normalise
   :args (s/cat :v ::vector)
   :ret ::vector)
+
+(defn dot
+  [v1 v2]
+  (reduce + (map * v1 v2)))
+
+(s/fdef dot
+  :args (s/cat :v1 ::vector
+               :v2 ::vector)
+  :ret double?)
+
+(defn cross
+  [v1 v2]
+  (vector (- (* (nth v1 1) (nth v2 2))
+             (* (nth v1 2) (nth v2 1)))
+          (- (* (nth v1 2) (nth v2 0))
+             (* (nth v1 0) (nth v2 2)))
+          (- (* (nth v1 0) (nth v2 1))
+             (* (nth v1 1) (nth v2 0)))))
+
+(s/fdef cross
+  :args (s/cat :v1 ::vector
+               :v2 ::vector)
+  :ret ::vector)

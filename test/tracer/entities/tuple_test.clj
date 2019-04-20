@@ -108,3 +108,17 @@
   (let [v (sut/vector 1 2 3)
         norm (sut/normalise v)]
     (is (= 1.0 (sut/magnitude norm)))))
+
+(deftest the-dot-product-of-two-tuples
+  (let [a (sut/vector 1 2 3)
+        b (sut/vector 2 3 4)]
+    (is (= 20.0 (sut/dot a b)))
+    (is (= 20.0 (sut/dot b a)))))
+
+(deftest the-cross-product-of-two-vectors
+  (let [a (sut/vector 1 2 3)
+        b (sut/vector 2 3 4)]
+    (is (= (sut/cross a b)
+           (sut/vector -1 2 -1)))
+    (is (= (sut/cross b a)
+           (sut/vector 1 -2 1)))))
