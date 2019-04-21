@@ -1,18 +1,10 @@
 (ns tracer.entities.tuple-test
   (:require [clojure.test :refer (deftest testing is)]
+            [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.tuple :as sut]))
 
 (clojure.test/use-fixtures :once instrument)
-
-(defn- approx
-  "Compare two tuples approximately"
-  [v1 v2]
-  (if (and (sequential? v1)
-           (sequential? v2))
-    (every? true? (map approx v1 v2))
-    (< (Math/abs (- v1 v2))
-       0.0001)))
 
 (deftest tuple-component-fns
   (let [a (#'sut/tuple 4.3 -4.2 3.1 1.0)]
