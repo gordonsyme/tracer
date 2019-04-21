@@ -3,4 +3,5 @@
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.10.0"]]
   :profiles {:dev {:dependencies [[orchestra "2018.12.06-2"]]}}
+  :plugins [[lein-cloverage "1.1.1"]]
   :repl-options {:init-ns tracer.core})
