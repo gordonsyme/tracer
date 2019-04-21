@@ -7,20 +7,20 @@
 (clojure.test/use-fixtures :once instrument)
 
 (deftest tuple-component-fns
-  (let [a (#'sut/tuple 4.3 -4.2 3.1 1.0)]
+  (let [a (sut/tuple 4.3 -4.2 3.1 1.0)]
     (is (= 4.3 (sut/x a)))
     (is (= -4.2 (sut/y a)))
     (is (= 3.1 (sut/z a)))
     (is (= 1.0 (sut/w a)))))
 
 (deftest a-tuple-with-w-equal-1-is-a-point
-  (let [a (#'sut/tuple 4.3 -4.2 3.1 1.0)]
+  (let [a (sut/tuple 4.3 -4.2 3.1 1.0)]
     (is (= [4.3 -4.2 3.1 1.0] a))
     (is (sut/point? a))
     (is (not (sut/vector? a)))))
 
 (deftest a-tuple-with-w-equal-0-is-a-vector
-  (let [a (#'sut/tuple 4.3 -4.2 3.1 0.0)]
+  (let [a (sut/tuple 4.3 -4.2 3.1 0.0)]
     (is (= [4.3 -4.2 3.1 0.0] a))
     (is (sut/vector? a))
     (is (not (sut/point? a)))))
@@ -34,9 +34,9 @@
          (sut/vector 4.0 -4.0 3.0))))
 
 (deftest adding-two-tuples
-  (let [a1 (#'sut/tuple 3 -2 5 1)
-        a2 (#'sut/tuple -2 3 1 0)]
-    (is (= (#'sut/tuple 1 1 6 1)
+  (let [a1 (sut/tuple 3 -2 5 1)
+        a2 (sut/tuple -2 3 1 0)]
+    (is (= (sut/tuple 1 1 6 1)
            (sut/add a1 a2)))))
 
 (deftest subtracting-tuples
@@ -65,25 +65,25 @@
              (sut/sub zero v))))))
 
 (deftest negating-a-tuple
-  (let [t (#'sut/tuple 1 -2 3 -4)]
-    (is (= (#'sut/tuple -1 2 -3 4)
+  (let [t (sut/tuple 1 -2 3 -4)]
+    (is (= (sut/tuple -1 2 -3 4)
            (sut/negate t)))))
 
 (deftest multiplying-tuples
   (testing "Multiplying a tuple by a scaler"
-    (let [t (#'sut/tuple 1 -2 3 -4)]
-      (is (= (#'sut/tuple 3.5 -7.0 10.5 -14.0)
+    (let [t (sut/tuple 1 -2 3 -4)]
+      (is (= (sut/tuple 3.5 -7.0 10.5 -14.0)
              (sut/mul t 3.5)))))
 
   (testing "Multiplying a tuple by a fraction"
-    (let [t (#'sut/tuple 1 -2 3 -4)]
-      (is (= (#'sut/tuple 0.5 -1.0 1.5 -2.0)
+    (let [t (sut/tuple 1 -2 3 -4)]
+      (is (= (sut/tuple 0.5 -1.0 1.5 -2.0)
              (sut/mul t 0.5))))))
 
 (deftest dividing-tuples
   (testing "Dividing a tuple by a scalar"
-    (let [t (#'sut/tuple 1 -2 3 -4)]
-      (is (= (#'sut/tuple 0.5 -1.0 1.5 -2.0)
+    (let [t (sut/tuple 1 -2 3 -4)]
+      (is (= (sut/tuple 0.5 -1.0 1.5 -2.0)
              (sut/div t 2))))))
 
 (deftest magnitude

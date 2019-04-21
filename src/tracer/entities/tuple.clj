@@ -2,10 +2,10 @@
   (:refer-clojure :exclude [vector? vector])
   (:require [clojure.spec.alpha :as s]))
 
-(s/def ::tuple (s/and (s/coll-of double? :count 4)
+(s/def ::tuple (s/and (s/coll-of number? :count 4)
                       clojure.core/vector?))
 
-(defn- tuple
+(defn tuple
   "Create a tuple, a 4-element vector of numbers"
   [x y z w]
   [(double x) (double y) (double z) (double w)])
@@ -14,30 +14,30 @@
   :args (s/cat :x number? :y number? :z number? :w number?)
   :ret ::tuple)
 
-(definline x
+(defn x
   [a1]
-  `(first ~a1))
+  (first a1))
 (s/fdef x
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
-(definline y
+(defn y
   [a1]
-  `(second ~a1))
+  (second a1))
 (s/fdef y
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
-(definline z
+(defn z
   [a1]
-  `(nth ~a1 2))
+  (nth a1 2))
 (s/fdef z
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
-(definline w
+(defn w
   [a1]
-  `(nth ~a1 3))
+  (nth a1 3))
 (s/fdef w
   :args (s/cat :a1 ::tuple)
   :ret double?)
