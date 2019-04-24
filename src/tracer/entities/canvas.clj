@@ -39,10 +39,17 @@
   :args (s/cat :c ::canvas)
   :ret ::pixels)
 
+(defn- in-bounds?
+  [c x y]
+  (and (<= 0 x (dec (width c)))
+       (<= 0 y (dec (height c)))))
+
 (defn write-pixel
   [c x y colour]
-  (let [pos (+ x (* y (::width c)))]
-    (update c ::pixels assoc pos colour)))
+  (if (in-bounds? c x y)
+    (let [pos (+ x (* y (::width c)))]
+      (update c ::pixels assoc pos colour))
+    c))
 (s/fdef write-pixel
   :args (s/cat :c ::canvas
                :x nat-int?
