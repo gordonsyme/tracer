@@ -134,3 +134,52 @@
   (testing "transposing the identity matrix is a noop"
     (is (= (sut/identity 4)
            (sut/transpose (sut/identity 4))))))
+
+(deftest calculating-the-determinant-of-a-2x2-matrix
+  (is (== 17 (sut/determinant (sut/matrix [ 1 5]
+                                          [-3 2])))))
+
+(deftest submatrices
+  (testing "a submatrix of a 3x3 matrix is a 2x2 matrix"
+    (let [a (sut/matrix [ 1 5  0]
+                        [-3 2  7]
+                        [ 0 6 -3])]
+      (is (= (sut/matrix [2  7]
+                         [6 -3])
+             (sut/submatrix a 0 0)))
+      (is (= (sut/matrix [-3  7]
+                         [ 0 -3])
+             (sut/submatrix a 0 1)))
+      (is (= (sut/matrix [-3 2]
+                         [ 0 6])
+             (sut/submatrix a 0 2)))
+
+      (is (= (sut/matrix [5  0]
+                         [6 -3])
+             (sut/submatrix a 1 0)))
+      (is (= (sut/matrix [1  0]
+                         [0 -3])
+             (sut/submatrix a 1 1)))
+      (is (= (sut/matrix [1 5]
+                         [0 6])
+             (sut/submatrix a 1 2)))
+
+      (is (= (sut/matrix [5 0]
+                         [2 7])
+             (sut/submatrix a 2 0)))
+      (is (= (sut/matrix [ 1 0]
+                         [-3 7])
+             (sut/submatrix a 2 1)))
+      (is (= (sut/matrix [ 1 5]
+                         [-3 2])
+             (sut/submatrix a 2 2)))))
+
+  (testing "a submatrix of a 4x4 matrix is a 3x3 matrix"
+    (let [a (sut/matrix [-6 1  1 6]
+                        [-8 5  8 6]
+                        [-1 0  8 2]
+                        [-7 1 -1 1])]
+      (is (= (sut/matrix [-6  1 6]
+                         [-8  8 6]
+                         [-7 -1 1])
+             (sut/submatrix a 2 1))))))

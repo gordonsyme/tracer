@@ -85,3 +85,38 @@
   :args (s/cat :mat ::matrix
                :tup ::t/tuple)
   :ret ::t/tuple)
+
+(defn determinant
+  [m]
+  (- (* (get m 0 0)
+        (get m 1 1))
+     (* (get m 0 1)
+        (get m 1 0))))
+(s/fdef determinant
+  :args (s/cat :m (s/and ::matrix
+                         #(= 2 (count (first %)))))
+  :ret number?)
+
+(defn- dissocv
+  "Remove the element at `idx` from vector `v`"
+  [v idx]
+  (cond
+    (zero? idx)
+    (subvec v 1)
+
+    (= idx (dec (count v)))
+    (subvec v 0 idx)
+
+    :else
+    (into (subvec v 0 idx)
+          (subvec v (inc idx)))))
+
+(defn submatrix
+  [m i j]
+  (mapv #(dissocv % j)
+        (dissocv m i)))
+(s/fdef submatrix
+  :args (s/cat :m ::matrix
+               :i nat-int?
+               :j nat-int?)
+  :ret ::matrix)
