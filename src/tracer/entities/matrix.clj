@@ -26,6 +26,7 @@
         (assoc row i 1.0)))))
 (s/fdef identity
   :args (s/cat :n pos-int?)
+  ;; add :fn spec to assert that rows/cols == n
   :ret ::matrix)
 
 (defn get
@@ -44,6 +45,7 @@
       (mapv #(clojure.core/get % i) m))))
 (s/fdef transpose
   :args (s/cat :m ::matrix)
+  ;; add fn spec to assert the count of rows/cols has swapped
   :ret ::matrix)
 
 (defn mul
@@ -85,6 +87,17 @@
   :args (s/cat :mat ::matrix
                :tup ::t/tuple)
   :ret ::t/tuple)
+
+(defn- scalar-div
+  "Divide all elements of a matrix by a scalar."
+  [m v]
+  (vec
+    (for [row m]
+      (mapv #(/ % v) row))))
+(s/fdef scalar-div
+  :args (s/cat :m ::matrix
+               :v (s/and number? (complement zero?)))
+  :ret ::matrix)
 
 ;; eww :( might be possible to do via a ' or * variant of cofactor or determinant
 (declare cofactor)
@@ -157,3 +170,29 @@
                :i nat-int?
                :j nat-int?)
   :ret number?)
+
+(def invertible? (comp (complement zero?) determinant))
+(s/fdef invertible?
+  :args (s/cat :m ::matrix)
+  :ret boolean?)
+
+(defn- cofactor-matrix
+  [m]
+  (vec
+    (map-indexed
+      (fn [i row]
+        (vec
+          (map-indexed
+            (fn [j _col]
+              (cofactor m i j))
+            row)))
+      m)))
+
+(defn inverse
+  [m]
+  (-> (cofactor-matrix m)
+      (transpose)
+      (scalar-div (determinant m))))
+(s/fdef inverse
+  :args (s/cat :m ::matrix)
+  :ret ::matrix)

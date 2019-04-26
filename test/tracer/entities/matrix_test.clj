@@ -221,3 +221,72 @@
       (is (== 210 (mat/cofactor a 0 2)))
       (is (== 51 (mat/cofactor a 0 3)))
       (is (== -4071 (mat/determinant a))))))
+
+(deftest testing-invertibility
+  (testing "an invertible 4x4 matrix"
+    (let [a (mat/matrix [6  4 4  4]
+                        [5  5 7  6]
+                        [4 -9 3 -7]
+                        [9  1 7 -6])]
+      (is (== -2120 (mat/determinant a)))
+      (is (mat/invertible? a))))
+
+  (testing "a non-invertible 4x4 matrix"
+    (let [a (mat/matrix [-4  2 -2 -3]
+                        [ 9  6  2  6]
+                        [ 0 -5  1 -5]
+                        [ 0  0  0  0])]
+      (is (zero? (mat/determinant a)))
+      (is (not (mat/invertible? a))))))
+
+(deftest calculating-the-inverse-of-a-matrix
+  (let [a (mat/matrix [-5  2  6 -8]
+                      [ 1 -5  1  8]
+                      [ 7  7 -6 -7]
+                      [ 1 -3  7  4])
+        b (mat/inverse a)]
+    (is (approx 532 (mat/determinant a)))
+    (is (approx -160 (mat/cofactor a 2 3)))
+    (is (approx -160/532 (mat/get b 3 2)))
+    (is (approx 105 (mat/cofactor a 3 2)))
+    (is (approx 105/532 (mat/get b 2 3)))
+    (is (approx (mat/matrix [116/532   240/532  128/532  -24/532]
+                            [-430/532 -775/532 -236/532  277/532]
+                            [ -42/532 -119/532  -28/532  105/532]
+                            [-278/532 -433/532 -160/532  163/532])
+                b))))
+
+(deftest more-inverse-matrices
+  (testing "another one"
+    (let [a (mat/matrix [ 8 -5  9  2]
+                        [ 7  5  6  1]
+                        [-6  0  9  6]
+                        [-3  0 -9 -4])]
+      (is (approx (mat/matrix [-0.15385 -0.15385 -0.28205 -0.53846]
+                              [-0.07692  0.12308  0.02564  0.03077]
+                              [ 0.35897  0.35897  0.43590  0.92308]
+                              [-0.69231 -0.69231 -0.76923 -1.92308])
+                  (mat/inverse a)))))
+
+  (testing "and another one"
+    (let [a (mat/matrix [ 9  3  0  9]
+                        [-5 -2 -6 -3]
+                        [-4  9  6  4]
+                        [-7  6  6  2])]
+      (is (approx (mat/matrix [-0.04074 -0.07778  0.14444 -0.22222]
+                              [-0.07778  0.03333  0.36667 -0.33333]
+                              [-0.02901 -0.14630 -0.10926  0.12963]
+                              [ 0.17778  0.06667 -0.26667  0.33333])
+                  (mat/inverse a))))))
+
+(deftest multiplying-a-product-by-its-inverse
+  (let [a (mat/matrix [ 3 -9  7  3]
+                      [ 3 -8  2 -9]
+                      [-4  4  4  1]
+                      [-6  5 -1  1])
+        b (mat/matrix [8  2 2 2]
+                      [3 -1 7 0]
+                      [7  0 5 4]
+                      [6 -2 0 5])
+        c (mat/mul a b)]
+    (is (approx a (mat/mul c (mat/inverse b))))))
