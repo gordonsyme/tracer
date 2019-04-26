@@ -86,15 +86,31 @@
                :tup ::t/tuple)
   :ret ::t/tuple)
 
+;; eww :( might be possible to do via a ' or * variant of cofactor or determinant
+(declare cofactor)
 (defn determinant
   [m]
-  (- (* (get m 0 0)
-        (get m 1 1))
-     (* (get m 0 1)
-        (get m 1 0))))
+  (let [width (count (first m))
+        height (count m)]
+    (cond
+      (= 1 width height)
+      (get m 0 0)
+
+      (= 2 width height)
+      (- (* (get m 0 0)
+            (get m 1 1))
+         (* (get m 0 1)
+            (get m 1 0)))
+
+      :else
+      (reduce +
+              0
+              (map-indexed
+                (fn [j v]
+                  (* v (cofactor m 0 j)))
+                (first m))))))
 (s/fdef determinant
-  :args (s/cat :m (s/and ::matrix
-                         #(= 2 (count (first %)))))
+  :args (s/cat :m ::matrix)
   :ret number?)
 
 (defn- dissocv
@@ -120,3 +136,24 @@
                :i nat-int?
                :j nat-int?)
   :ret ::matrix)
+
+(def minor
+  "The minor of a matrix at [i, j] is defined to be the determinant of the
+  submatrix at [i, j]"
+  (comp determinant submatrix))
+(s/fdef minor
+  :args (s/cat :m ::matrix
+               :i nat-int?
+               :j nat-int?)
+  :ret number?)
+
+(defn cofactor
+  [m i j]
+  (if (odd? (+ i j))
+    (- (minor m i j))
+    (minor m i j)))
+(s/fdef minor
+  :args (s/cat :m ::matrix
+               :i nat-int?
+               :j nat-int?)
+  :ret number?)

@@ -183,3 +183,41 @@
                          [-8  8 6]
                          [-7 -1 1])
              (mat/submatrix a 2 1))))))
+
+(deftest calculating-a-minor-of-a-3x3-matrix
+  (let [a (mat/matrix [3  5  0]
+                      [2 -1 -7]
+                      [6 -1  5])
+        b (mat/submatrix a 1 0)]
+    (is (== 25 (mat/determinant b)))
+    (is (== 25 (mat/minor a 1 0)))))
+
+(deftest calculating-a-cofactor-of-a-3x3-matrix
+  (let [a (mat/matrix [3  5  0]
+                      [2 -1 -7]
+                      [6 -1  5])]
+    (is (== -12 (mat/minor a 0 0)))
+    (is (== -12 (mat/cofactor a 0 0)))
+    (is (== 25 (mat/minor a 1 0)))
+    (is (== -25 (mat/cofactor a 1 0)))))
+
+(deftest calculating-determinants
+  (testing "3x3 matrix"
+    (let [a (mat/matrix [ 1 2  6]
+                        [-5 8 -4]
+                        [ 2 6  4])]
+      (is (== 56 (mat/cofactor a 0 0)))
+      (is (== 12 (mat/cofactor a 0 1)))
+      (is (== -46 (mat/cofactor a 0 2)))
+      (is (== -196 (mat/determinant a)))))
+
+  (testing "4x4 matrix"
+    (let [a (mat/matrix [-2 -8  3  5]
+                        [-3  1  7  3]
+                        [ 1  2 -9  6]
+                        [-6  7  7 -9])]
+      (is (== 690 (mat/cofactor a 0 0)))
+      (is (== 447 (mat/cofactor a 0 1)))
+      (is (== 210 (mat/cofactor a 0 2)))
+      (is (== 51 (mat/cofactor a 0 3)))
+      (is (== -4071 (mat/determinant a))))))
