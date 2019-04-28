@@ -7,7 +7,7 @@
             [tracer.use-cases.ppm :as ppm]
             [putting-together.chapter-1 :as ch1]))
 
-(defn- write-pixels
+(defn write-pixels
   [c x y colour]
   (-> c
       (canvas/write-pixel x y colour)
