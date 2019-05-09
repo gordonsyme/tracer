@@ -135,6 +135,9 @@
     (is (= (mat/identity 4)
            (mat/transpose (mat/identity 4))))))
 
+(deftest calculating-the-determinant-of-a-1x-matrix
+  (is (== -3 (mat/determinant (mat/matrix [-3])))))
+
 (deftest calculating-the-determinant-of-a-2x2-matrix
   (is (== 17 (mat/determinant (mat/matrix [ 1 5]
                                           [-3 2])))))
