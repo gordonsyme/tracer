@@ -47,3 +47,22 @@
   :args (s/cat :s ::sphere
                :m ::mat/matrix)
   :ret ::sphere)
+
+(defn normal-at
+  [s p]
+  (let [inv-transform (mat/inverse (:transform s))
+        object-point (mat/mult inv-transform p)
+        object-normal (t/sub object-point (t/point 0 0 0))]
+    (t/normalise
+      ;; Setting w=0.0 is a hack to account for transposes of translations
+      ;; mucking with the w coordinate of vectors.
+      ;; The correct thing to do is multiply by the inverse of (submatrix
+      ;; transform 3 3) but that reduces 4-component tuples down to 3-component
+      ;; tuples.
+      (assoc (mat/mult (mat/transpose inv-transform) object-normal)
+             3
+             0.0))))
+(s/fdef normal-at
+  :args (s/cat :s ::sphere
+               :p ::t/point)
+  :ret ::t/vector)
