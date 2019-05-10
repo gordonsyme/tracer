@@ -1,14 +1,16 @@
 (ns tracer.entities.sphere
   (:require [clojure.spec.alpha :as s]
             [tracer.entities.intersection :as i]
+            [tracer.entities.material :as material]
             [tracer.entities.matrix :as mat]
             [tracer.entities.ray :as ray]
             [tracer.entities.transform :as transform]
             [tracer.entities.tuple :as t]))
 
 (s/def ::transform ::mat/matrix)
+(s/def ::material ::material/material)
 (s/def ::sphere (s/keys :req [::i/tag]
-                        :req-un [::transform]))
+                        :req-un [::transform ::material]))
 
 (defmethod i/object-type :sphere
   [_]
@@ -17,7 +19,8 @@
 (defn sphere
   []
   {::i/tag :sphere
-   :transform (transform/identity)})
+   :transform (transform/identity)
+   :material (material/material)})
 (s/fdef sphere
   :ret ::sphere)
 
@@ -46,6 +49,14 @@
 (s/fdef with-transform
   :args (s/cat :s ::sphere
                :m ::mat/matrix)
+  :ret ::sphere)
+
+(defn with-material
+  [s m]
+  (assoc s :material m))
+(s/fdef with-material
+  :args (s/cat :s ::sphere
+               :m ::material/material)
   :ret ::sphere)
 
 (defn normal-at

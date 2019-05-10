@@ -3,6 +3,7 @@
             [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
+            [tracer.entities.material :as material]
             [tracer.entities.matrix :as mat]
             [tracer.entities.ray :as ray]
             [tracer.entities.sphere :as sphere]
@@ -108,3 +109,14 @@
           root-2-over-2 (/ (Math/sqrt 2) 2)]
       (is (approx (tup/vector 0 0.97014 -0.24254)
                   (sphere/normal-at s (tup/point 0 root-2-over-2 (- root-2-over-2))))))))
+
+(deftest a-sphere-has-a-default-material
+  (let [s (sphere/sphere)
+        m (material/material)]
+    (is (= m (:material s)))))
+
+(deftest a-sphere-may-be-assigned-a-material
+  (let [m (assoc (material/material)
+                 :ambient 1.0)
+        s (sphere/with-material (sphere/sphere) m)]
+    (is (= m (:material s)))))
