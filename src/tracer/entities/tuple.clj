@@ -176,3 +176,13 @@
   :args (s/cat :v1 ::vector
                :v2 ::vector)
   :ret ::vector)
+
+(defn reflect
+  [in normal]
+  (sub in
+       (mul normal
+            (* 2 (dot in normal)))))
+(s/fdef reflect
+  :args (s/cat :in ::vector
+               :normal ::vector)
+  :ret ::vector)

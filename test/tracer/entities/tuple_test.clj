@@ -118,3 +118,17 @@
            (sut/vector -1 2 -1)))
     (is (= (sut/cross b a)
            (sut/vector 1 -2 1)))))
+
+(deftest reflecting-vectors
+  (testing "approaching at 45 degrees"
+    (let [v (sut/vector 1 -1 0)
+          n (sut/vector 0 1 0)]
+      (is (= (sut/vector 1 1 0)
+             (sut/reflect v n)))))
+
+  (testing "off a slanted surface"
+    (let [v (sut/vector 0 -1 0)
+          root-2-over-2 (/ (Math/sqrt 2) 2)
+          n (sut/vector root-2-over-2 root-2-over-2 0)]
+      (is (approx (sut/vector 1 0 0)
+                  (sut/reflect v n))))))
