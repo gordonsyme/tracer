@@ -12,15 +12,29 @@
             [tracer.entities.tuple :as tup]
             [tracer.use-cases.ppm :as ppm]))
 
+(defn- compute-colour
+  [x y sphere canvas-to-world camera-pos light]
+  (let [target (t/apply canvas-to-world (tup/point x y -5))
+        r (ray/ray camera-pos
+                   (tup/normalise (tup/sub target camera-pos)))]
+    (when-let [hit (i/hit (i/intersect sphere r))]
+      (let [point (ray/position r (:t hit))
+            eye (tup/negate (:direction r))]
+        [x y (material/lighting (-> hit :object :material)
+                                light
+                                point
+                                eye
+                                (sphere/normal-at (:object hit) point))]))))
+
 (defn go
-  []
+  [file-name]
   (let [width 500
         height 500
         light (light/point-light (tup/point -10 10 10)
                                  (colour/colour 1 1 1))
         camera-pos (tup/point 0 0 5)
         sphere (-> (sphere/sphere)
-                   (sphere/with-transform (-> (t/scaling 1 1 1)
+                   #_(sphere/with-transform (-> (t/scaling 1 1 1)
                                               (t/shear :xy 1)
                                               (t/rotate-z (/ Math/PI 4))))
                    (sphere/with-material (assoc (material/material)
@@ -44,17 +58,7 @@
                                      1))
         canvas-to-world (mat/inverse world-to-canvas)
         pixels (map (fn [[x y]]
-                      (let [target (t/apply canvas-to-world (tup/point x y -5))
-                            r (ray/ray camera-pos
-                                       (tup/normalise (tup/sub target camera-pos)))]
-                        (when-let [hit (i/hit (i/intersect sphere r))]
-                          (let [point (ray/position r (:t hit))
-                                eye (tup/negate (:direction r))]
-                            [x y (material/lighting (-> hit :object :material)
-                                                    light
-                                                    point
-                                                    eye
-                                                    (sphere/normal-at (:object hit) point))]))))
+                      (compute-colour x y sphere canvas-to-world camera-pos light))
                     (for [x (range width)
                           y (range height)]
                       [x y]))
@@ -62,6 +66,6 @@
                  (fn [c [x y colour]]
                    (canvas/write-pixel c x y colour))
                  (canvas/canvas width height)
-                 (filter some? (seque pixels)))]
-    (with-open [s (io/output-stream (io/as-file "/tmp/sphere-sheared-shaded.ppm"))]
+                 (filter some? pixels))]
+    (with-open [s (io/output-stream (io/as-file file-name))]
       (ppm/generate canvas s))))
