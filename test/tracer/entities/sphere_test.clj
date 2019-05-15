@@ -116,7 +116,6 @@
     (is (= m (:material s)))))
 
 (deftest a-sphere-may-be-assigned-a-material
-  (let [m (assoc (material/material)
-                 :ambient 1.0)
+  (let [m (material/with-ambient (material/material) 1.0)
         s (sphere/with-material (sphere/sphere) m)]
     (is (= m (:material s)))))

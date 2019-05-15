@@ -37,8 +37,9 @@
                    #_(sphere/with-transform (-> (t/scaling 1 1 1)
                                               (t/shear :xy 1)
                                               (t/rotate-z (/ Math/PI 4))))
-                   (sphere/with-material (assoc (material/material)
-                                                :colour (colour/colour 1 0.2 1))))
+                   (sphere/with-material (material/with-colour
+                                           (material/material)
+                                           (colour/colour 1 0.2 1))))
 
         ;; wall is at z = -5 and has dimensions 6*6
         ;; transform world point to canvas ...

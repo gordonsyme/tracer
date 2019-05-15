@@ -24,6 +24,46 @@
 (s/fdef material
   :ret ::material)
 
+(defn with-colour
+  [m c]
+  (assoc m :colour c))
+(s/fdef with-colour
+  :args (s/cat :m ::material
+               :c ::colour/colour)
+  :ret ::material)
+
+(defn with-ambient
+  [m ambient]
+  (assoc m :ambient ambient))
+(s/fdef with-ambient
+  :args (s/cat :m ::material
+               :ambient ::non-neg-number)
+  :ret ::material)
+
+(defn with-diffuse
+  [m diffuse]
+  (assoc m :diffuse diffuse))
+(s/fdef with-diffuse
+  :args (s/cat :m ::material
+               :diffuse ::non-neg-number)
+  :ret ::material)
+
+(defn with-specular
+  [m specular]
+  (assoc m :specular specular))
+(s/fdef with-specular
+  :args (s/cat :m ::material
+               :specular ::non-neg-number)
+  :ret ::material)
+
+(defn with-shininess
+  [m shininess]
+  (assoc m :shininess shininess))
+(s/fdef with-shininess
+  :args (s/cat :m ::material
+               :shininess ::non-neg-number)
+  :ret ::material)
+
 (defn lighting
   [m light point eye normal]
   (let [effective-colour (colour/hadamard (:colour m) (:intensity light))
