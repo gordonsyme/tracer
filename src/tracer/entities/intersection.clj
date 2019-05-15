@@ -1,8 +1,17 @@
- (ns tracer.entities.intersection
-   (:require [clojure.spec.alpha :as s]
-             [tracer.entities.ray :as r]))
+(ns tracer.entities.intersection
+  (:require [clojure.spec.alpha :as s]
+            [tracer.entities.material :as material]
+            [tracer.entities.matrix :as mat]
+            [tracer.entities.ray :as r]
+            [tracer.entities.tuple :as tup]))
 
 (s/def ::tag keyword?)
+
+(s/def ::transform ::mat/matrix)
+(s/def ::inverse-transform ::mat/matrix)
+(s/def ::material ::material/material)
+(s/def ::object-common (s/keys :req [::tag]
+                               :req-un [::transform ::inverse-transform ::material]))
 
 (defmulti object-type ::tag)
 (s/def ::object (s/multi-spec object-type ::tag))
@@ -27,6 +36,14 @@
   :args (s/cat :obj ::object
                :r ::r/ray)
   :ret ::intersections)
+
+(defmulti normal-at
+  (fn [obj _point]
+    (::tag obj)))
+(s/fdef normal-at
+  :args (s/cat :o ::object
+               :p ::tup/point)
+  :ret ::tup/vector)
 
 (defn intersections
   [& is]

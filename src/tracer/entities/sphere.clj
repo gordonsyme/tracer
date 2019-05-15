@@ -7,11 +7,7 @@
             [tracer.entities.transform :as transform]
             [tracer.entities.tuple :as t]))
 
-(s/def ::transform ::mat/matrix)
-(s/def ::inverse-transform ::mat/matrix)
-(s/def ::material ::material/material)
-(s/def ::sphere (s/keys :req [::i/tag]
-                        :req-un [::transform ::inverse-transform ::material]))
+(s/def ::sphere ::i/object-common)
 
 (defmethod i/object-type :sphere
   [_]
@@ -62,7 +58,7 @@
                :m ::material/material)
   :ret ::sphere)
 
-(defn normal-at
+(defmethod i/normal-at :sphere
   [s p]
   (let [inv-transform (:inverse-transform s)
         object-point (mat/mult inv-transform p)
@@ -76,7 +72,3 @@
       (assoc (mat/mult (mat/transpose inv-transform) object-normal)
              3
              0.0))))
-(s/fdef normal-at
-  :args (s/cat :s ::sphere
-               :p ::t/point)
-  :ret ::t/vector)
