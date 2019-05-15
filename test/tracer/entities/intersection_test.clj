@@ -2,7 +2,9 @@
   (:require [clojure.test :refer (deftest testing is)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
-            [tracer.entities.sphere :as sphere]))
+            [tracer.entities.ray :as ray]
+            [tracer.entities.sphere :as sphere]
+            [tracer.entities.tuple :as tup]))
 
 (clojure.test/use-fixtures :once instrument)
 
@@ -49,3 +51,29 @@
         i4 (i/intersection 2 s)
         xs (i/intersections i1 i2 i3 i4)]
     (is (= i4 (i/hit xs)))))
+
+(deftest precomputing-the-state-of-an-intersection
+  (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1))
+        shape (sphere/sphere)
+        i (i/intersection 4 shape)
+        comps (i/prepare-computations i r)]
+    (is (= {:t (:t i)
+            :object (:object i)
+            :point (tup/point 0 0 -1)
+            :eyev (tup/vector 0 0 -1)
+            :normalv (tup/vector 0 0 -1)
+            :inside false}
+           comps))))
+
+(deftest precomputing-the-state-of-an-intersection-when-the-hit-is-on-the-inside
+  (let [r (ray/ray (tup/point 0 0 0) (tup/vector 0 0 1))
+        shape (sphere/sphere)
+        i (i/intersection 1 shape)
+        comps (i/prepare-computations i r)]
+    (is (= {:t (:t i)
+            :object (:object i)
+            :point (tup/point 0 0 1)
+            :eyev (tup/vector 0 0 -1)
+            :normalv (tup/vector 0 0 -1)
+            :inside true}
+           comps))))

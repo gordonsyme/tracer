@@ -20,6 +20,11 @@
 (s/def ::intersection (s/keys :req-un [::t ::object]))
 (s/def ::intersections (s/coll-of ::intersection))
 
+(s/def ::eyev ::tup/vector)
+(s/def ::normalv ::tup/vector)
+(s/def ::inside boolean?)
+(s/def ::computations (s/keys :req-un [::t ::object ::tup/point ::eyev ::normalv ::inside]))
+
 (defn intersection
   [t o]
   {:t t
@@ -59,3 +64,23 @@
 (s/fdef hit
   :args (s/cat :is ::intersections)
   :ret (s/nilable ::intersection))
+
+(defn prepare-computations
+  [i r]
+  (let [{:keys [t object]} i
+        point (r/position r t)
+        eye (tup/negate (:direction r))
+        normal (normal-at object point)
+        inside (neg? (tup/dot normal eye))]
+    {:t t
+     :object object
+     :point point
+     :eyev eye
+     :normalv (if inside
+                (tup/negate normal)
+                normal)
+     :inside inside}))
+(s/fdef prepare-computations
+  :args (s/cat :i ::intersection
+               :r ::r/ray)
+  :ret ::computations)
