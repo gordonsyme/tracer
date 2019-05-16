@@ -2,6 +2,7 @@
   (:require [clojure.test :refer (deftest testing is)]
             [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
+            [tracer.test-entities :refer (default-world)]
             [tracer.entities.colour :as colour]
             [tracer.entities.light :as light]
             [tracer.entities.intersection :as i]
@@ -13,21 +14,6 @@
             [tracer.entities.world :as world]))
 
 (clojure.test/use-fixtures :once instrument)
-
-(defn- default-world
-  []
-  (-> (world/world)
-      (world/add-light (light/point-light
-                         (tup/point -10 10 -10)
-                         (colour/colour 1 1 1)))
-      (world/add-object (sphere/with-material
-                          (sphere/sphere)
-                          (-> (material/material)
-                              (material/with-colour (colour/colour 0.8 1.0 0.6))
-                              (material/with-diffuse 0.7)
-                              (material/with-specular 0.2))))
-      (world/add-object (sphere/with-transform (sphere/sphere)
-                          (transform/scaling 0.5 0.5 0.5)))))
 
 (deftest creating-a-world
   (let [w (world/world)]
