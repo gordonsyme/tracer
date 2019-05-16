@@ -178,3 +178,21 @@
   :args (s/cat :transform ::mat/matrix
                :tuple ::tup/tuple)
   :ret ::tup/tuple)
+
+(defn view-transform
+  [from to up]
+  (let [forward (tup/normalise (tup/sub to from))
+        left (tup/cross forward (tup/normalise up))
+        true-up (tup/cross left forward)
+        orientation (mat/matrix left
+                                true-up
+                                (tup/negate forward)
+                                [0 0 0 1])]
+    (mat/mul orientation
+             (clojure.core/apply translation
+                                 (take 3 (tup/negate from))))))
+(s/fdef view-transform
+  :args (s/cat :from ::tup/point
+               :to ::tup/point
+               :up ::tup/vector)
+  :ret ::mat/matrix)

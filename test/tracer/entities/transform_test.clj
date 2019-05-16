@@ -196,3 +196,35 @@
                       (t/translate 10 5 7))]
     (is (= (tup/point 15 0 7)
            (t/apply transform (tup/point 1 0 1))))))
+
+(deftest view-transformations
+  (testing "the transformation matrix for the default orientation"
+    (let [from (tup/point 0 0 0)
+          to (tup/point 0 0 -1)
+          up (tup/vector 0 1 0)]
+      (is (= (t/identity)
+             (t/view-transform from to up)))))
+
+  (testing "the transformation matrix looking in the positive z direction"
+    (let [from (tup/point 0 0 0)
+          to (tup/point 0 0 1)
+          up (tup/vector 0 1 0)]
+      (is (= (t/scaling -1 1 -1)
+             (t/view-transform from to up)))))
+
+  (testing "the view transformation moves the world"
+    (let [from (tup/point 0 0 8)
+          to (tup/point 0 0 0)
+          up (tup/vector 0 1 0)]
+      (is (= (t/translation 0 0 -8)
+             (t/view-transform from to up)))))
+
+  (testing "an arbitrary view transformation"
+    (let [from (tup/point 1 3 2)
+          to (tup/point 4 -2 8)
+          up (tup/vector 1 1 0)]
+      (is (approx (mat/matrix [-0.50709 0.50709  0.67612 -2.36643]
+                              [ 0.76772 0.60609  0.12122 -2.82843]
+                              [-0.35857 0.59761 -0.71714  0.0]
+                              [ 0.0     0.0      0.0      1.0])
+                  (t/view-transform from to up))))))
