@@ -74,3 +74,25 @@
                                                (tup/vector 0 0 1)))]
     (is (approx (colour/colour 0.90498 0.90498 0.90498)
                 (world/shade-hit w comps)))))
+
+(deftest colouring-hits-in-the-world
+  (let [w (default-world)]
+    (testing "when the ray misses"
+      (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 1 0))]
+        (is (= (colour/colour 0 0 0)
+               (world/colour-at w r)))))
+
+    (testing "when the ray hits"
+      (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1))]
+        (is (approx (colour/colour 0.38066 0.47583 0.2855)
+                    (world/colour-at w r)))))
+
+    (testing "when there is an intersection behind the ray"
+      (let [w (update w :objects (fn [objs]
+                                   (map (fn [o]
+                                          (update o :material material/with-ambient 1))
+                                        objs)))
+            inner (second (world/objects w))
+            r (ray/ray (tup/point 0 0 0.75) (tup/vector 0 0 -1))]
+        (is (= (-> inner :material :colour)
+               (world/colour-at w r)))))))

@@ -68,3 +68,15 @@
   :args (s/cat :w ::world
                :comps ::i/computations)
   :ret ::colour/colour)
+
+(defn colour-at
+  [w r]
+  (let [is (intersect w r)
+        hit (i/hit is)]
+    (if hit
+      (shade-hit w (i/prepare-computations hit r))
+      (colour/colour 0 0 0))))
+(s/fdef colour-at
+  :args (s/cat :w ::world
+               :r ::ray/ray)
+  :ret ::colour/colour)
