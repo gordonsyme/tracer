@@ -77,12 +77,26 @@
   [c w]
   (let [width (:hsize c)
         height (:vsize c)
-        pixels (map (fn [[x y]]
-                      (let [r (ray-for-pixel c x y)]
-                        [x y (world/colour-at w r)]))
-                    (for [x (range width)
-                          y (range height)]
-                      [x y]))]
+        pixels-per-thread (Math/ceil
+                            (/ (* width height)
+                               (-> (Runtime/getRuntime)
+                                   (.availableProcessors)
+                                   (+ 2))))
+        ranges (partition-all
+                 pixels-per-thread
+                 (for [x (range width)
+                       y (range height)]
+                   [x y]))
+        workers (->> (for [r ranges]
+                       (future
+                         (mapv (fn [[x y]]
+                                 (let [r (ray-for-pixel c x y)]
+                                   [x y (world/colour-at w r)]))
+                               r)))
+                     doall
+                     (map deref)
+                     doall)
+        pixels (apply concat workers)]
     (reduce (fn [canvas [x y colour]]
               (canvas/write-pixel canvas x y colour))
             (canvas/canvas width height)
