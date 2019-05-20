@@ -4,7 +4,8 @@
             [tracer.entities.intersection :as i]
             [tracer.entities.light :as light]
             [tracer.entities.material :as material]
-            [tracer.entities.ray :as ray]))
+            [tracer.entities.ray :as ray]
+            [tracer.entities.tuple :as tup]))
 
 (s/def ::world (s/keys :req-un []))
 
@@ -53,6 +54,21 @@
                :r ::ray/ray)
   :ret ::i/intersections)
 
+(defn shadowed?
+  [w light p]
+  (let [shadowv (tup/sub (:position light) p)
+        shadow-ray (ray/ray p (tup/normalise shadowv))
+        hit (i/hit (intersect w shadow-ray))]
+    (boolean
+      (and hit
+           (< (:t hit)
+              (tup/magnitude shadowv))))))
+(s/fdef shadowed?
+  :args (s/cat :w ::world
+               :light ::light/light
+               :p ::tup/point)
+  :ret boolean?)
+
 (defn shade-hit
   [w comps]
   (reduce
@@ -61,9 +77,10 @@
     (for [light (lights w)]
       (material/lighting (:material (:object comps))
                          light
-                         (:point comps)
+                         (:over-point comps)
                          (:eyev comps)
-                         (:normalv comps)))))
+                         (:normalv comps)
+                         (shadowed? w light (:over-point comps))))))
 (s/fdef shade-hit
   :args (s/cat :w ::world
                :comps ::i/computations)

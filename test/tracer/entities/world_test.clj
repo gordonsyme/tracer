@@ -61,6 +61,22 @@
     (is (approx (colour/colour 0.90498 0.90498 0.90498)
                 (world/shade-hit w comps)))))
 
+(deftest shading-an-intersection-in-shadow
+  (let [s1 (sphere/sphere)
+        s2 (sphere/with-transform
+             (sphere/sphere)
+             (transform/translation 0 0 10))
+        w (-> (default-world)
+              (assoc :lights [(light/point-light (tup/point 0 0 -10)
+                                                 (colour/colour 1 1 1))])
+              (world/add-object s1)
+              (world/add-object s2))
+        r (ray/ray (tup/point 0 0 5)
+                   (tup/vector 0 0 1))
+        comps (i/prepare-computations (i/intersection 4 s2) r)]
+    (is (= (colour/colour 0.1 0.1 0.1)
+           (world/shade-hit w comps)))))
+
 (deftest colouring-hits-in-the-world
   (let [w (default-world)]
     (testing "when the ray misses"
@@ -82,3 +98,18 @@
             r (ray/ray (tup/point 0 0 0.75) (tup/vector 0 0 -1))]
         (is (= (-> inner :material :colour)
                (world/colour-at w r)))))))
+
+(deftest shadowing
+  (let [w (default-world)
+        l (first (world/lights w))]
+    (testing "no shadow when nothing is colinear with the point and light"
+      (is (false? (world/shadowed? w l (tup/point 0 10 0)))))
+
+    (testing "shadowed when an object is between the point and the light"
+      (is (true? (world/shadowed? w l (tup/point 10 -10 10)))))
+
+    (testing "there is no shadow when an object is behind the light"
+      (is (false? (world/shadowed? w l (tup/point -20 20 -20)))))
+
+    (testing "no shadow when an object is behind the point"
+      (is (false? (world/shadowed? w l (tup/point -2 2 -2)))))))

@@ -23,7 +23,8 @@
 (s/def ::eyev ::tup/vector)
 (s/def ::normalv ::tup/vector)
 (s/def ::inside boolean?)
-(s/def ::computations (s/keys :req-un [::t ::object ::tup/point ::eyev ::normalv ::inside]))
+(s/def ::over-point ::tup/point)
+(s/def ::computations (s/keys :req-un [::t ::object ::tup/point ::over-point ::eyev ::normalv ::inside]))
 
 (defn intersection
   [t o]
@@ -71,14 +72,16 @@
         point (r/position r t)
         eye (tup/negate (:direction r))
         normal (normal-at object point)
-        inside (neg? (tup/dot normal eye))]
+        inside (neg? (tup/dot normal eye))
+        normalv (if inside
+                  (tup/negate normal)
+                  normal)]
     {:t t
      :object object
      :point point
+     :over-point (tup/add point (tup/mul normalv 0.00001))
      :eyev eye
-     :normalv (if inside
-                (tup/negate normal)
-                normal)
+     :normalv normalv
      :inside inside}))
 (s/fdef prepare-computations
   :args (s/cat :i ::intersection

@@ -4,6 +4,7 @@
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
             [tracer.entities.sphere :as sphere]
+            [tracer.entities.transform :as transform]
             [tracer.entities.tuple :as tup]))
 
 (clojure.test/use-fixtures :once instrument)
@@ -60,6 +61,7 @@
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 -1)
+            :over-point (tup/point 0.0 0.0 -1.00001)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :inside false}
@@ -73,7 +75,19 @@
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 1)
+            :over-point (tup/point 0.0 0.0 1.00001)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :inside true}
            comps))))
+
+(deftest the-hit-should-offset-the-point
+  (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1))
+        shape (sphere/with-transform (sphere/sphere)
+                                     (transform/translation 0 0 1))
+        i (i/intersection 5 shape)
+        comps (i/prepare-computations i r)]
+    (is (< (tup/z (:over-point comps))
+           0.00001))
+    (is (> (tup/z (:point comps))
+           (tup/z (:over-point comps))))))
