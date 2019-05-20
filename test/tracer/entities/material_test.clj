@@ -28,7 +28,7 @@
             light (light/point-light (tup/point 0 0 -10)
                                      (colour/colour 1 1 1))]
         (is (= (colour/colour 1.9 1.9 1.9)
-               (material/lighting m light point eyev normalv)))))
+               (material/lighting m light point eyev normalv false)))))
 
     (testing "With the eye between the light and the surface, eye offset 45 degrees"
       (let [eyev (tup/vector 0 root-2-over-2 (- root-2-over-2))
@@ -36,7 +36,7 @@
             light (light/point-light (tup/point 0 0 -10)
                                      (colour/colour 1 1 1))]
         (is (= (colour/colour 1.0 1.0 1.0)
-               (material/lighting m light point eyev normalv)))))
+               (material/lighting m light point eyev normalv false)))))
 
     (testing "With the eye opposite the surface, light offset 45 degrees"
       (let [eyev (tup/vector 0 0 -1)
@@ -44,7 +44,7 @@
             light (light/point-light (tup/point 0 10 -10)
                                      (colour/colour 1 1 1))]
         (is (approx (colour/colour 0.736396 0.736396 0.736396)
-                    (material/lighting m light point eyev normalv)))))
+                    (material/lighting m light point eyev normalv false)))))
 
     (testing "With the eye opposite the surface, light offset 45 degrees"
       (let [eyev (tup/vector 0 (- root-2-over-2) (- root-2-over-2))
@@ -52,7 +52,7 @@
             light (light/point-light (tup/point 0 10 -10)
                                      (colour/colour 1 1 1))]
         (is (approx (colour/colour 1.636396 1.636396 1.636396)
-                    (material/lighting m light point eyev normalv)))))
+                    (material/lighting m light point eyev normalv false)))))
 
     (testing "With the light behind the surface"
       (let [eyev (tup/vector 0 0 -1)
@@ -60,4 +60,13 @@
             light (light/point-light (tup/point 0 0 10)
                                      (colour/colour 1 1 1))]
         (is (= (colour/colour 0.1 0.1 0.1)
-               (material/lighting m light point eyev normalv)))))))
+               (material/lighting m light point eyev normalv false)))))
+
+    (testing "With the surface in shadow"
+      (let [eyev (tup/vector 0 0 -1)
+            normalv (tup/vector 0 0 -1)
+            light (light/point-light (tup/point 0 0 -10)
+                                     (colour/colour 1 1 1))
+            in-shadow true]
+        (is (= (colour/colour 0.1 0.1 0.1)
+               (material/lighting m light point eyev normalv in-shadow)))))))

@@ -65,12 +65,13 @@
   :ret ::material)
 
 (defn lighting
-  [m light point eye normal]
+  [m light point eye normal in-shadow?]
   (let [effective-colour (colour/hadamard (:colour m) (:intensity light))
         ambient (colour/mul effective-colour (:ambient m))
         lightv (tup/normalise (tup/sub (:position light) point))
         light-dot-normal (tup/dot lightv normal)]
-    (if (neg? light-dot-normal)
+    (if (or in-shadow?
+            (neg? light-dot-normal))
       ;; light is on the wrong side of the surface, there is no contribution
       ;; from diffuse or specular
       ambient
@@ -90,5 +91,6 @@
                :light ::light/light
                :position ::tup/point
                :eye ::tup/vector
-               :normal ::tup/vector)
+               :normal ::tup/vector
+               :in-shadow? boolean?)
   :ret ::colour/colour)
