@@ -7,6 +7,7 @@
             [tracer.entities.light :as light]
             [tracer.entities.matrix :as mat]
             [tracer.entities.ray :as ray]
+            [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.transform :as t]
             [tracer.entities.tuple :as tup]
@@ -34,12 +35,12 @@
                                  (colour/colour 1 1 1))
         camera-pos (tup/point 0 0 5)
         sphere (-> (sphere/sphere)
-                   #_(sphere/with-transform (-> (t/scaling 1 1 1)
-                                              (t/shear :xy 1)
-                                              (t/rotate-z (/ Math/PI 4))))
-                   (sphere/with-material (material/with-colour
-                                           (material/material)
-                                           (colour/colour 1 0.2 1))))
+                   #_(shape/with-transform (-> (t/scaling 1 1 1)
+                                             (t/shear :xy 1)
+                                             (t/rotate-z (/ Math/PI 4))))
+                   (shape/with-material (material/with-colour
+                                          (material/material)
+                                          (colour/colour 1 0.2 1))))
 
         ;; wall is at z = -5 and has dimensions 6*6
         ;; transform world point to canvas ...

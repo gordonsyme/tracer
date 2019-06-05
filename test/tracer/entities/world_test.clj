@@ -7,6 +7,7 @@
             [tracer.entities.light :as light]
             [tracer.entities.intersection :as i]
             [tracer.entities.material :as material]
+            [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.ray :as ray]
             [tracer.entities.transform :as transform]
@@ -23,13 +24,13 @@
 (deftest the-default-world
   (let [light (light/point-light (tup/point -10 10 -10)
                                  (colour/colour 1 1 1))
-        s1 (sphere/with-material (sphere/sphere)
-                                 (-> (material/material)
-                                     (material/with-colour (colour/colour 0.8 1.0 0.6))
-                                     (material/with-diffuse 0.7)
-                                     (material/with-specular 0.2)))
-        s2 (sphere/with-transform (sphere/sphere)
-                                  (transform/scaling 0.5 0.5 0.5))
+        s1 (shape/with-material (sphere/sphere)
+                                (-> (material/material)
+                                    (material/with-colour (colour/colour 0.8 1.0 0.6))
+                                    (material/with-diffuse 0.7)
+                                    (material/with-specular 0.2)))
+        s2 (shape/with-transform (sphere/sphere)
+                                 (transform/scaling 0.5 0.5 0.5))
         w (default-world)]
     (is (= [light] (world/lights w)))
     (is (contains? (set (world/objects w)) s1))
@@ -63,7 +64,7 @@
 
 (deftest shading-an-intersection-in-shadow
   (let [s1 (sphere/sphere)
-        s2 (sphere/with-transform
+        s2 (shape/with-transform
              (sphere/sphere)
              (transform/translation 0 0 10))
         w (-> (default-world)

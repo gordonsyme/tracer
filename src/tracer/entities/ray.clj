@@ -17,6 +17,20 @@
                :d ::direction)
   :ret ::ray)
 
+(defn origin
+  [r]
+  (:origin r))
+(s/fdef origin
+  :args (s/cat :r ::ray)
+  :ret ::origin)
+
+(defn direction
+  [r]
+  (:direction r))
+(s/fdef direction
+  :args (s/cat :r ::ray)
+  :ret ::direction)
+
 (defn position
   [r t]
   (t/add (:origin r)

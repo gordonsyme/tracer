@@ -5,6 +5,7 @@
             [tracer.entities.colour :as colour]
             [tracer.entities.light :as light]
             [tracer.entities.tuple :as tup]
+            [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.material :as material]
             [tracer.entities.transform :as transform]
@@ -16,46 +17,46 @@
                              (material/with-colour (colour/colour 1 0.9 0.9))
                              (material/with-specular 0))
         floor (-> (sphere/sphere)
-                  (sphere/with-transform
+                  (shape/with-transform
                     (transform/scaling 10 0.01 10))
-                  (sphere/with-material surface-material))
+                  (shape/with-material surface-material))
         left-wall (-> (sphere/sphere)
-                      (sphere/with-transform
+                      (shape/with-transform
                         (-> (transform/identity)
                             (transform/scale 10 0.01 10)
                             (transform/rotate-x (/ Math/PI 2))
                             (transform/rotate-y (- (/ Math/PI 4)))
                             (transform/translate 0 0 5)))
-                      (sphere/with-material surface-material))
+                      (shape/with-material surface-material))
         right-wall (-> (sphere/sphere)
-                       (sphere/with-transform
+                       (shape/with-transform
                          (-> (transform/identity)
                              (transform/scale 10 0.01 10)
                              (transform/rotate-x (/ Math/PI 2))
                              (transform/rotate-y (/ Math/PI 4))
                              (transform/translate 0 0 5)))
-                       (sphere/with-material surface-material))
+                       (shape/with-material surface-material))
         middle-sphere (-> (sphere/sphere)
-                          (sphere/with-transform (transform/translation -0.5 1 0.5))
-                          (sphere/with-material
+                          (shape/with-transform (transform/translation -0.5 1 0.5))
+                          (shape/with-material
                             (-> (material/material)
                                 (material/with-colour (colour/colour 0.1 1 0.5))
                                 (material/with-diffuse 0.7)
                                 (material/with-specular 0.3))))
         right-sphere (-> (sphere/sphere)
-                         (sphere/with-transform
+                         (shape/with-transform
                            (-> (transform/scaling 0.5 0.5 0.5)
                                (transform/translate 1.5 0.5 -0.5)))
-                         (sphere/with-material
+                         (shape/with-material
                            (-> (material/material)
                                (material/with-colour (colour/colour 0.5 1 0.1))
                                (material/with-diffuse 0.7)
                                (material/with-specular 0.3))))
         left-sphere (-> (sphere/sphere)
-                        (sphere/with-transform
+                        (shape/with-transform
                           (-> (transform/scaling 0.33 0.33 0.33)
                               (transform/translate -1.5 0.33 -0.75)))
-                        (sphere/with-material
+                        (shape/with-material
                           (-> (material/material)
                               (material/with-colour (colour/colour 1 0.8 0.1))
                               (material/with-diffuse 0.7)

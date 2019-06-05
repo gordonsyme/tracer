@@ -5,6 +5,7 @@
             [tracer.entities.light :as light]
             [tracer.entities.material :as material]
             [tracer.entities.ray :as ray]
+            [tracer.entities.shape :as shape]
             [tracer.entities.tuple :as tup]))
 
 (s/def ::world (s/keys :req-un []))
@@ -21,14 +22,14 @@
   (:objects w))
 (s/fdef objects
   :args (s/cat :w ::world)
-  :ret (s/coll-of ::i/object))
+  :ret (s/coll-of ::shape/object))
 
 (defn add-object
   [w o]
   (update w :objects conj o))
 (s/fdef add-object
   :args (s/cat :w ::world
-               :o ::i/object)
+               :o ::shape/object)
   :ret ::world)
 
 (defn lights

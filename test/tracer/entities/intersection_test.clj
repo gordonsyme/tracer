@@ -3,6 +3,7 @@
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
+            [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.transform :as transform]
             [tracer.entities.tuple :as tup]))
@@ -75,7 +76,7 @@
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 1)
-            :over-point (tup/point 0.0 0.0 1.00001)
+            :over-point (tup/point 0.0 0.0 0.99999)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :inside true}
@@ -83,8 +84,8 @@
 
 (deftest the-hit-should-offset-the-point
   (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1))
-        shape (sphere/with-transform (sphere/sphere)
-                                     (transform/translation 0 0 1))
+        shape (shape/with-transform (sphere/sphere)
+                                    (transform/translation 0 0 1))
         i (i/intersection 5 shape)
         comps (i/prepare-computations i r)]
     (is (< (tup/z (:over-point comps))

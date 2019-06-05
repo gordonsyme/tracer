@@ -5,6 +5,7 @@
             [tracer.entities.intersection :as i]
             [tracer.entities.matrix :as mat]
             [tracer.entities.ray :as ray]
+            [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.transform :as t]
             [tracer.entities.tuple :as tup]
@@ -15,10 +16,10 @@
   (let [width 200
         height 200
         light (tup/point 0 0 5)
-        sphere (sphere/with-transform (sphere/sphere)
-                                      (-> (t/scaling 1 1 1)
-                                          (t/shear :xy 1)
-                                          (t/rotate-z (/ Math/PI 4))))
+        sphere (shape/with-transform (sphere/sphere)
+                                     (-> (t/scaling 1 1 1)
+                                         (t/shear :xy 1)
+                                         (t/rotate-z (/ Math/PI 4))))
 
         ;; wall is at z = -5 and has dimensions 6*6
         ;; transform world point to canvas ...
