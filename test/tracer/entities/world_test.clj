@@ -7,6 +7,7 @@
             [tracer.entities.light :as light]
             [tracer.entities.intersection :as i]
             [tracer.entities.material :as material]
+            [tracer.entities.pattern :as pattern]
             [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.ray :as ray]
@@ -77,6 +78,28 @@
         comps (i/prepare-computations (i/intersection 4 s2) r)]
     (is (= (colour/colour 0.1 0.1 0.1)
            (world/shade-hit w comps)))))
+
+(deftest shading-an-intersection-with-a-pattern
+  (let [s (-> (sphere/sphere)
+              (shape/with-transform
+                (transform/translation 0 0 10))
+              (shape/with-material
+                (-> (material/material)
+                    (material/with-ambient 1)
+                    (material/with-specular 0)
+                    (material/with-diffuse 0)
+                    (material/with-pattern
+                      (pattern/stripes (colour/colour 0.2 0.2 0.2)
+                                       (colour/colour 0.8 0.8 0.8))))))
+        w (-> (default-world)
+              (assoc :lights [(light/point-light (tup/point 0 0 -10)
+                                                 (colour/colour 1 1 1))])
+              (world/add-object s))
+        r (ray/ray (tup/point 0 0 5)
+                   (tup/vector 0 0 1))
+        comps (i/prepare-computations (i/intersection 4 s) r)]
+    (is (approx (colour/colour 0.2 0.2 0.2)
+                (world/shade-hit w comps)))))
 
 (deftest colouring-hits-in-the-world
   (let [w (default-world)]

@@ -2,6 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [tracer.entities.colour :as colour]
             [tracer.entities.light :as light]
+            [tracer.entities.pattern :as pattern]
             [tracer.entities.tuple :as tup]))
 
 (s/def ::non-neg-number (s/and number?
@@ -12,7 +13,8 @@
 (s/def ::diffuse ::non-neg-number)
 (s/def ::specular ::non-neg-number)
 (s/def ::shininess ::non-neg-number)
-(s/def ::material (s/keys :req-un [::colour ::ambient ::diffuse ::specular ::shininess]))
+(s/def ::pattern (s/nilable ::pattern/pattern))
+(s/def ::material (s/keys :req-un [::colour ::ambient ::diffuse ::specular ::shininess ::pattern]))
 
 (defn material
   []
@@ -20,7 +22,8 @@
    :ambient 0.1
    :diffuse 0.9
    :specular 0.9
-   :shininess 200.0})
+   :shininess 200.0
+   :pattern nil})
 (s/fdef material
   :ret ::material)
 
@@ -64,9 +67,18 @@
                :shininess ::non-neg-number)
   :ret ::material)
 
+(defn with-pattern
+  [m pattern]
+  (assoc m :pattern pattern))
+(s/fdef with-pattern
+  :args (s/cat :m ::material
+               :pattern ::pattern/pattern)
+  :ret ::material)
+
 (defn lighting
-  [m light point eye normal in-shadow?]
-  (let [effective-colour (colour/hadamard (:colour m) (:intensity light))
+  [m shader light point eye normal in-shadow?]
+  (let [colour (shader point)
+        effective-colour (colour/hadamard colour (:intensity light))
         ambient (colour/mul effective-colour (:ambient m))
         lightv (tup/normalise (tup/sub (:position light) point))
         light-dot-normal (tup/dot lightv normal)]
@@ -88,6 +100,8 @@
             (colour/add specular))))))
 (s/fdef lighting
   :args (s/cat :m ::material
+               :shader (s/fspec :args (s/cat :point ::tup/point)
+                                :ret ::colour/colour)
                :light ::light/light
                :position ::tup/point
                :eye ::tup/vector

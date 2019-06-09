@@ -4,6 +4,7 @@
             [tracer.entities.intersection :as i]
             [tracer.entities.light :as light]
             [tracer.entities.material :as material]
+            [tracer.entities.pattern :as pattern]
             [tracer.entities.ray :as ray]
             [tracer.entities.shape :as shape]
             [tracer.entities.tuple :as tup]))
@@ -72,16 +73,25 @@
 
 (defn shade-hit
   [w comps]
-  (reduce
-    colour/add
-    (colour/colour 0.0 0.0 0.0)
-    (for [light (lights w)]
-      (material/lighting (:material (:object comps))
-                         light
-                         (:over-point comps)
-                         (:eyev comps)
-                         (:normalv comps)
-                         (shadowed? w light (:over-point comps))))))
+  (let [{:keys [object over-point eyev normalv]} comps
+        material (:material object)
+        shader (if-let [pattern (:pattern material)]
+                  (partial pattern/colour-at
+                           pattern
+                           (shape/inverse-transform object))
+                  (fn [_point]
+                    (:colour material)))]
+    (reduce
+      colour/add
+      (colour/colour 0.0 0.0 0.0)
+      (for [light (lights w)]
+        (material/lighting material
+                           shader
+                           light
+                           over-point
+                           eyev
+                           normalv
+                           (shadowed? w light over-point))))))
 (s/fdef shade-hit
   :args (s/cat :w ::world
                :comps ::i/computations)
