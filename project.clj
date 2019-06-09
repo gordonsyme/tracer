@@ -2,6 +2,7 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.10.0"]]
-  :profiles {:dev {:dependencies [[orchestra "2018.12.06-2"]]}}
+  :profiles {:dev {:dependencies [[orchestra "2018.12.06-2"]
+                                  [org.clojure/test.check "0.10.0-alpha4"]]}}
   :plugins [[lein-cloverage "1.1.1"]]
   :repl-options {:init-ns tracer.core})

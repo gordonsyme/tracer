@@ -1,6 +1,7 @@
 (ns tracer.entities.tuple
   (:refer-clojure :exclude [vector? vector])
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]))
 
 (s/def ::tuple (s/and (s/coll-of number? :count 4)
                       clojure.core/vector?))
@@ -51,8 +52,13 @@
   :args (s/cat :a1 ::tuple)
   :ret boolean?)
 
-(s/def ::point (s/and ::tuple
-                      point?))
+(s/def ::point (s/with-gen
+                 (s/and ::tuple point?)
+                 #(gen/fmap (fn [[x y z]]
+                              (tuple x y z 1.0))
+                            (gen/tuple (gen/double* {:NaN? false :min -100.0 :max 100.0})
+                                       (gen/double* {:NaN? false :min -100.0 :max 100.0})
+                                       (gen/double* {:NaN? false :min -100.0 :max 100.0})))))
 
 (defn point
   "Create a point, a tuple with w=1.0"
@@ -72,8 +78,13 @@
   :args (s/cat :a1 ::tuple)
   :ret boolean?)
 
-(s/def ::vector (s/and ::tuple
-                       vector?))
+(s/def ::vector (s/with-gen
+                 (s/and ::tuple vector?)
+                 #(gen/fmap (fn [[x y z]]
+                              (tuple x y z 0))
+                            (gen/tuple (gen/double* {:NaN? false :min -100.0 :max 100.0})
+                                       (gen/double* {:NaN? false :min -100.0 :max 100.0})
+                                       (gen/double* {:NaN? false :min -100.0 :max 100.0})))))
 
 (defn vector
   "Create a vector, a tuple with w=0.0"
