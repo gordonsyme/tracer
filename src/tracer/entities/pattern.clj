@@ -101,3 +101,54 @@
   :args (s/cat :c1 ::colour/colour
                :c2 ::colour/colour)
   :ret ::pattern)
+
+(defn ring-pattern
+  [a b]
+  (pattern
+    (fn [point]
+      (let [distance (Math/floor
+                       (Math/sqrt
+                         (+ (* (tup/x point)
+                               (tup/x point))
+                            (* (tup/z point)
+                               (tup/z point)))))]
+        (if (zero? (mod distance 2))
+          (local-colour-at a point)
+          (local-colour-at b point))))))
+(s/fdef ring-pattern
+  :args (s/cat :a ::pattern
+               :b ::pattern)
+  :ret ::pattern)
+
+(defn rings
+  "Helper fn to build a two-colour ring pattern"
+  [c1 c2]
+  (ring-pattern (colour-pattern c1) (colour-pattern c2)))
+(s/fdef rings
+  :args (s/cat :c1 ::colour/colour
+               :c2 ::colour/colour)
+  :ret ::pattern)
+
+(defn checked-pattern
+  [a b]
+  (pattern
+    (fn [point]
+      (let [distance (+ (Math/floor (tup/x point))
+                        (Math/floor (tup/y point))
+                        (Math/floor (tup/z point)))]
+        (if (zero? (mod distance 2))
+          (local-colour-at a point)
+          (local-colour-at b point))))))
+(s/fdef checked-pattern
+  :args (s/cat :a ::pattern
+               :b ::pattern)
+  :ret ::pattern)
+
+(defn checks
+  "Helper fn to build a two-colour 3d checked pattern"
+  [c1 c2]
+  (checked-pattern (colour-pattern c1) (colour-pattern c2)))
+(s/fdef checks
+  :args (s/cat :c1 ::colour/colour
+               :c2 ::colour/colour)
+  :ret ::pattern)

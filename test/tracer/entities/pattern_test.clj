@@ -86,3 +86,29 @@
            (#'pattern/local-colour-at p (tup/point 0.5 0 0))))
     (is (= (colour/colour 0.25 0.25 0.25)
            (#'pattern/local-colour-at p (tup/point 0.75 0 0))))))
+
+(deftest radial-pattern
+  (let [p (pattern/rings white black)]
+    (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0))))
+    (is (= black (#'pattern/local-colour-at p (tup/point 1 0 0))))
+    (is (= black (#'pattern/local-colour-at p (tup/point 0 0 1))))
+    (is (= black (#'pattern/local-colour-at p (tup/point 0.708 0 0.708))))))
+
+(deftest three-d-checked-pattern
+  (testing "checks should repeat in x"
+    (let [p (pattern/checks white black)]
+      (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0))))
+      (is (= white (#'pattern/local-colour-at p (tup/point 0.99 0 0))))
+      (is (= black (#'pattern/local-colour-at p (tup/point 1.01 0 0))))))
+
+  (testing "checks should repeat in y"
+    (let [p (pattern/checks white black)]
+      (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0))))
+      (is (= white (#'pattern/local-colour-at p (tup/point 0 0.99 0))))
+      (is (= black (#'pattern/local-colour-at p (tup/point 0 1.01 00))))))
+
+  (testing "checks should repeat in z"
+    (let [p (pattern/checks white black)]
+      (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0))))
+      (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0.99))))
+      (is (= black (#'pattern/local-colour-at p (tup/point 0 0 1.01)))))))
