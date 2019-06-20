@@ -152,3 +152,14 @@
   :args (s/cat :c1 ::colour/colour
                :c2 ::colour/colour)
   :ret ::pattern)
+
+(defn blended-pattern
+  [a b]
+  (pattern
+    (fn [point]
+      (colour/blend (local-colour-at a point)
+                    (local-colour-at b point)))))
+(s/fdef blended-pattern
+  :args (s/cat :a ::pattern
+               :b ::pattern)
+  :ret ::pattern)

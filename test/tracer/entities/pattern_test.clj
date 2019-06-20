@@ -112,3 +112,10 @@
       (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0))))
       (is (= white (#'pattern/local-colour-at p (tup/point 0 0 0.99))))
       (is (= black (#'pattern/local-colour-at p (tup/point 0 0 1.01)))))))
+
+(deftest blending-patterns
+  (let [p (pattern/blended-pattern white-pattern black-pattern)
+        grey (colour/colour 0.5 0.5 0.5)]
+      (is (= grey (#'pattern/local-colour-at p (tup/point 0 0 0))))
+      (is (= grey (#'pattern/local-colour-at p (tup/point 0 0 0.99))))
+      (is (= grey (#'pattern/local-colour-at p (tup/point 0 0 1.01))))))

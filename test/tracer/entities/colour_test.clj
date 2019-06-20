@@ -36,3 +36,9 @@
         c2 (sut/colour 0.9 1 0.1)]
     (is (approx (sut/colour 0.9 0.2 0.04)
                 (sut/hadamard c1 c2)))))
+
+(deftest blending-colours
+  (let [c1 (sut/colour 1 0.2 0.4)
+        c2 (sut/colour 0.9 1 0.1)]
+    (is (approx (sut/colour 0.95 0.6 0.25)
+                (sut/blend c1 c2)))))

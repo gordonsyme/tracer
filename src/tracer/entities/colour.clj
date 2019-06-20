@@ -63,3 +63,11 @@
   :args (s/cat :c1 ::colour
                :c2 ::colour)
   :ret ::colour)
+
+(defn blend
+  [c1 c2]
+  (mapv #(/ % 2) (map + c1 c2)))
+(s/fdef blend
+  :args (s/cat :c1 ::colour
+               :c2 ::colour)
+  :ret ::colour)
