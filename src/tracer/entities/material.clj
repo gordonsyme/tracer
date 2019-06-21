@@ -13,8 +13,10 @@
 (s/def ::diffuse ::non-neg-number)
 (s/def ::specular ::non-neg-number)
 (s/def ::shininess ::non-neg-number)
+(s/def ::reflective ::non-neg-number)
 (s/def ::pattern (s/nilable ::pattern/pattern))
-(s/def ::material (s/keys :req-un [::colour ::ambient ::diffuse ::specular ::shininess ::pattern]))
+(s/def ::material
+  (s/keys :req-un [::colour ::ambient ::diffuse ::specular ::shininess ::reflective ::pattern]))
 
 (defn material
   []
@@ -23,6 +25,7 @@
    :diffuse 0.9
    :specular 0.9
    :shininess 200.0
+   :reflective 0.0
    :pattern nil})
 (s/fdef material
   :ret ::material)
@@ -65,6 +68,14 @@
 (s/fdef with-shininess
   :args (s/cat :m ::material
                :shininess ::non-neg-number)
+  :ret ::material)
+
+(defn with-reflective
+  [m reflective]
+  (assoc m :reflective reflective))
+(s/fdef with-reflective
+  :args (s/cat :m ::material
+               :reflective ::reflective)
   :ret ::material)
 
 (defn with-pattern
