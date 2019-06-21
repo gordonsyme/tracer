@@ -6,15 +6,26 @@
 
 (s/def ::origin ::t/point)
 (s/def ::direction ::t/vector)
-(s/def ::ray (s/keys :req-un [::origin ::direction]))
+(s/def ::ttl (s/or :zero zero?
+                   :pos pos-int?))
+(s/def ::ray (s/keys :req-un [::origin ::direction ::ttl]))
 
 (defn ray
-  [o d]
-  {:origin o
-   :direction d})
+  ([o d]
+   {:origin o
+    :direction d
+    :ttl 4})
+  ([o d ttl]
+   {:origin o
+    :direction d
+    :ttl ttl}))
 (s/fdef ray
-  :args (s/cat :o ::origin
-               :d ::direction)
+  :args (s/alt
+          :ray (s/cat :o ::origin
+                      :d ::direction)
+          :with-ttl (s/cat :o ::origin
+                           :d ::direction
+                           :ttl pos-int?))
   :ret ::ray)
 
 (defn origin
@@ -31,6 +42,13 @@
   :args (s/cat :r ::ray)
   :ret ::direction)
 
+(defn ttl
+  [r]
+  (:ttl r))
+(s/fdef ttl
+  :args (s/cat :r ::ray)
+  :ret ::ttl)
+
 (defn position
   [r t]
   (t/add (:origin r)
@@ -43,7 +61,8 @@
 (defn transform
   [r m]
   {:origin (transform/apply m (:origin r))
-   :direction (transform/apply m (:direction r))})
+   :direction (transform/apply m (:direction r))
+   :ttl (:ttl r)})
 (s/fdef transform
   :args (s/cat :r ::ray
                :m ::mat/matrix)

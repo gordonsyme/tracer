@@ -71,6 +71,23 @@
                :p ::tup/point)
   :ret boolean?)
 
+;; This is so wrong
+(declare colour-at)
+(defn reflected-colour
+  [w comps]
+  (let [{:keys [object over-point reflectv ttl]} comps
+        material (shape/material object)
+        reflectance (:reflective material)]
+    (if (or (zero? ttl)
+            (zero? reflectance))
+      (colour/colour 0 0 0)
+      (colour/mul (colour-at w (ray/ray over-point reflectv ttl))
+                  reflectance))))
+(s/fdef reflected-colour
+  :args (s/cat :w ::world
+               :comps ::i/computations)
+  :ret ::colour/colour)
+
 (defn- shade-hit
   [w comps]
   (let [{:keys [object over-point eyev normalv]} comps
@@ -80,18 +97,20 @@
                            pattern
                            (shape/inverse-transform object))
                   (fn [_point]
-                    (:colour material)))]
-    (reduce
-      colour/add
-      (colour/colour 0.0 0.0 0.0)
-      (for [light (lights w)]
-        (material/lighting material
-                           shader
-                           light
-                           over-point
-                           eyev
-                           normalv
-                           (shadowed? w light over-point))))))
+                    (:colour material)))
+        surface-colour (reduce
+                         colour/add
+                         (colour/colour 0.0 0.0 0.0)
+                         (for [light (lights w)]
+                           (material/lighting material
+                                              shader
+                                              light
+                                              over-point
+                                              eyev
+                                              normalv
+                                              (shadowed? w light over-point))))
+        reflected-colour (reflected-colour w comps)]
+    (colour/add surface-colour reflected-colour)))
 (s/fdef shade-hit
   :args (s/cat :w ::world
                :comps ::i/computations)

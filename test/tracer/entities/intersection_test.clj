@@ -3,6 +3,7 @@
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
+            [tracer.entities.plane :as plane]
             [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.transform :as transform]
@@ -55,7 +56,7 @@
     (is (= i4 (i/hit xs)))))
 
 (deftest precomputing-the-state-of-an-intersection
-  (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1))
+  (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1) 4)
         shape (sphere/sphere)
         i (i/intersection 4 shape)
         comps (i/prepare-computations i r)]
@@ -65,11 +66,13 @@
             :over-point (tup/point 0.0 0.0 -1.00000001)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
-            :inside false}
+            :reflectv (tup/vector 0 0 -1)
+            :inside false
+            :ttl 3}
            comps))))
 
 (deftest precomputing-the-state-of-an-intersection-when-the-hit-is-on-the-inside
-  (let [r (ray/ray (tup/point 0 0 0) (tup/vector 0 0 1))
+  (let [r (ray/ray (tup/point 0 0 0) (tup/vector 0 0 1) 4)
         shape (sphere/sphere)
         i (i/intersection 1 shape)
         comps (i/prepare-computations i r)]
@@ -79,7 +82,9 @@
             :over-point (tup/point 0.0 0.0 0.99999999)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
-            :inside true}
+            :reflectv (tup/vector 0 0 -1)
+            :inside true
+            :ttl 3}
            comps))))
 
 (deftest the-hit-should-offset-the-point
@@ -92,3 +97,13 @@
            0.00001))
     (is (> (tup/z (:point comps))
            (tup/z (:over-point comps))))))
+
+(deftest precomputing-the-reflection-vector
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        shape (plane/plane)
+        r (ray/ray (tup/point 0 1 -1)
+                   (tup/vector 0 (- root-2-over-2) root-2-over-2))
+        i (i/intersection (Math/sqrt 2) shape)
+        comps (i/prepare-computations i r)]
+    (is (= (tup/vector 0 root-2-over-2 root-2-over-2)
+           (:reflectv comps)))))

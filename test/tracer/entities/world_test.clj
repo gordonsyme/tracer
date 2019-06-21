@@ -8,6 +8,7 @@
             [tracer.entities.intersection :as i]
             [tracer.entities.material :as material]
             [tracer.entities.pattern :as pattern]
+            [tracer.entities.plane :as plane]
             [tracer.entities.shape :as shape]
             [tracer.entities.sphere :as sphere]
             [tracer.entities.ray :as ray]
@@ -137,3 +138,80 @@
 
     (testing "no shadow when an object is behind the point"
       (is (false? (world/shadowed? w l (tup/point -2 2 -2)))))))
+
+(deftest reflections
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        w (default-world)]
+    (testing "the reflected colour for a nonreflective material"
+      (let [r (ray/ray (tup/point 0 0 0) (tup/vector 0 0 1))
+            shape (let [s (second (world/objects w))]
+                    (shape/with-material s
+                      (material/with-ambient (shape/material s) 1)))
+            comps (i/prepare-computations (i/intersection 1 shape) r)]
+        (is (= (colour/colour 0 0 0)
+               (world/reflected-colour w comps)))))
+
+    (testing "the reflected colour for a reflective material"
+      (let [shape (-> (plane/plane)
+                      (shape/with-material
+                        (-> (material/material)
+                            (material/with-reflective 0.5)))
+                      (shape/with-transform
+                        (transform/translation 0 -1 0)))
+            w (world/add-object w shape)
+            r (ray/ray (tup/point 0 0 -3)
+                       (tup/vector 0 (- root-2-over-2) root-2-over-2))
+            comps (i/prepare-computations (i/intersection (Math/sqrt 2) shape) r)]
+        (is (approx (colour/colour 0.19033 0.23791 0.14274)
+                    (world/reflected-colour w comps)))))
+
+    (testing "shading hits with reflective materials"
+      (let [shape (-> (plane/plane)
+                      (shape/with-material
+                        (-> (material/material)
+                            (material/with-reflective 0.5)))
+                      (shape/with-transform
+                        (transform/translation 0 -1 0)))
+            w (world/add-object w shape)
+            r (ray/ray (tup/point 0 0 -3)
+                       (tup/vector 0 (- root-2-over-2) root-2-over-2))
+            comps (i/prepare-computations (i/intersection (Math/sqrt 2) shape) r)]
+
+        (is (approx (colour/colour 0.87676 0.92434 0.82917)
+                    (#'world/shade-hit w comps)))))))
+
+(deftest reflections-with-parallel-reflective-surfaces
+  (testing "mutually reflective surfaces"
+    (let [mirror (shape/with-material
+                   (plane/plane)
+                   (material/with-reflective (material/material) 1))
+          w (-> (default-world)
+                (assoc :lights
+                       [(light/point-light (tup/point 0 0 0)
+                                           (colour/colour 1 1 1))])
+                (world/add-object (shape/with-transform
+                                    mirror
+                                    (transform/translation 0 -1 0)))
+                (world/add-object (shape/with-transform
+                                    mirror
+                                    (transform/translation 0 1 0))))]
+      (world/colour-at w (ray/ray (tup/point 0 0 0)
+                                  (tup/vector 0 1 0))))))
+
+(deftest the-reflected-colour-at-the-maximum-recursion-depth
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        s (-> (plane/plane)
+              (shape/with-material
+                (material/with-reflective (material/material) 0.5))
+              (shape/with-transform
+                (transform/translation 0 -1 0)))
+        w (-> (default-world)
+              (world/add-object s))
+        r (ray/ray (tup/point 0 0 -3)
+                   (tup/vector 0 (- root-2-over-2) root-2-over-2)
+                   1)
+        comps (i/prepare-computations
+                (i/intersection (Math/sqrt 2) s)
+                r)]
+    (is (= (colour/colour 0 0 0)
+           (world/reflected-colour w comps)))))
