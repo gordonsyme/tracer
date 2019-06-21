@@ -71,7 +71,7 @@
                :p ::tup/point)
   :ret boolean?)
 
-(defn shade-hit
+(defn- shade-hit
   [w comps]
   (let [{:keys [object over-point eyev normalv]} comps
         material (:material object)

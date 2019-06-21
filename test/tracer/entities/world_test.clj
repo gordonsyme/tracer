@@ -50,7 +50,7 @@
                                       (ray/ray (tup/point 0 0 -5)
                                                (tup/vector 0 0 1)))]
     (is (approx (colour/colour 0.38066 0.47583 0.2855)
-                (world/shade-hit w comps)))))
+                (#'world/shade-hit w comps)))))
 
 (deftest shading-an-intersection-from-the-inside
   (let [w (assoc (default-world)
@@ -61,7 +61,7 @@
                                       (ray/ray (tup/point 0 0 0)
                                                (tup/vector 0 0 1)))]
     (is (approx (colour/colour 0.90498 0.90498 0.90498)
-                (world/shade-hit w comps)))))
+                (#'world/shade-hit w comps)))))
 
 (deftest shading-an-intersection-in-shadow
   (let [s1 (sphere/sphere)
@@ -77,7 +77,7 @@
                    (tup/vector 0 0 1))
         comps (i/prepare-computations (i/intersection 4 s2) r)]
     (is (= (colour/colour 0.1 0.1 0.1)
-           (world/shade-hit w comps)))))
+           (#'world/shade-hit w comps)))))
 
 (deftest shading-an-intersection-with-a-pattern
   (let [s (-> (sphere/sphere)
@@ -99,7 +99,7 @@
                    (tup/vector 0 0 1))
         comps (i/prepare-computations (i/intersection 4 s) r)]
     (is (approx (colour/colour 0.2 0.2 0.2)
-                (world/shade-hit w comps)))))
+                (#'world/shade-hit w comps)))))
 
 (deftest colouring-hits-in-the-world
   (let [w (default-world)]
