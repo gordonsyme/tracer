@@ -62,7 +62,7 @@
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 -1)
-            :over-point (tup/point 0.0 0.0 -1.00001)
+            :over-point (tup/point 0.0 0.0 -1.00000001)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :inside false}
@@ -76,7 +76,7 @@
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 1)
-            :over-point (tup/point 0.0 0.0 0.99999)
+            :over-point (tup/point 0.0 0.0 0.99999999)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :inside true}

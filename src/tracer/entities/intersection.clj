@@ -61,7 +61,7 @@
     {:t t
      :object object
      :point point
-     :over-point (tup/add point (tup/mul normalv 0.00001))
+     :over-point (tup/add point (tup/mul normalv 0.00000001))
      :eyev eye
      :normalv normalv
      :inside inside}))
