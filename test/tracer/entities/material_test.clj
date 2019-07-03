@@ -19,6 +19,8 @@
             :specular 0.9
             :shininess 200.0
             :reflective 0.0
+            :transparency 0.0
+            :refractive-index 1.0
             :pattern nil}
            m))))
 

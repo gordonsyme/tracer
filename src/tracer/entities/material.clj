@@ -15,8 +15,24 @@
 (s/def ::shininess ::non-neg-number)
 (s/def ::reflective ::non-neg-number)
 (s/def ::pattern (s/nilable ::pattern/pattern))
+(s/def ::transparency ::non-neg-number)
+(s/def ::refractive-index ::non-neg-number)
 (s/def ::material
-  (s/keys :req-un [::colour ::ambient ::diffuse ::specular ::shininess ::reflective ::pattern]))
+  (s/keys :req-un [::colour
+                   ::ambient
+                   ::diffuse
+                   ::specular
+                   ::shininess
+                   ::reflective
+                   ::pattern
+                   ::transparency
+                   ::refractive-index]))
+
+(def vacuum 1.0)
+(def air 1.00029)
+(def water 1.333)
+(def glass 1.52)
+(def diamond 2.417)
 
 (defn material
   []
@@ -26,6 +42,8 @@
    :specular 0.9
    :shininess 200.0
    :reflective 0.0
+   :transparency 0.0
+   :refractive-index 1.0
    :pattern nil})
 (s/fdef material
   :ret ::material)
@@ -85,6 +103,36 @@
   :args (s/cat :m ::material
                :pattern ::pattern/pattern)
   :ret ::material)
+
+(defn with-transparency
+  [m transparency]
+  (assoc m :transparency transparency))
+(s/fdef with-transparency
+  :args (s/cat :m ::material
+               :transparency ::transparency)
+  :ret ::material)
+
+(defn transparent?
+  [m]
+  (not (zero? (:transparency m))))
+(s/fdef transparent?
+  :args (s/cat :m ::material)
+  :ret boolean?)
+
+(defn with-refractive-index
+  [m refractive-index]
+  (assoc m :refractive-index refractive-index))
+(s/fdef with-refractive-index
+  :args (s/cat :m ::material
+               :refractive-index ::refractive-index)
+  :ret ::material)
+
+(defn refractive-index
+  [m]
+  (:refractive-index m))
+(s/fdef refractive-index
+  :args (s/cat :m ::material)
+  :ret ::refractive-index)
 
 (defn lighting
   [m shader light point eye normal in-shadow?]
