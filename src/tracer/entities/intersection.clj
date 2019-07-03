@@ -1,6 +1,7 @@
 (ns tracer.entities.intersection
   (:require [clojure.spec.alpha :as s]
             [tracer.entities.ray :as r]
+            [tracer.entities.material :as material]
             [tracer.entities.shape :as shape]
             [tracer.entities.tuple :as tup]))
 
@@ -52,26 +53,71 @@
   :args (s/cat :is ::intersections)
   :ret (s/nilable ::intersection))
 
+(defn- boundary-materials
+  ([is] (boundary-materials is (list)))
+  ([[i & is] containers]
+   (if (nil? i)
+     []
+     (let [obj (:object i)
+           obj-contains-ray? (some #{obj} containers)
+           new-containers (remove #{obj} containers)]
+       (if obj-contains-ray?
+         (lazy-cat
+           (take 1 new-containers)
+           (boundary-materials is new-containers))
+         (lazy-cat
+           [obj]
+           (boundary-materials is (conj containers obj))))))))
+
+(defn- refraction-boundaries
+  [is]
+  (let [vacuum (material/material)
+        materials (map shape/material (boundary-materials is))]
+    (map vector
+         (map :t is)
+         (map vector
+              (concat [vacuum] materials)
+              (concat materials [vacuum])))))
+
+(defn refraction-boundary
+  [hit is]
+  (second
+    (first
+      (drop-while #(not= (:t hit) (first %))
+                  (refraction-boundaries is)))))
+
 (defn prepare-computations
-  [i r]
-  (let [{:keys [t object]} i
-        point (r/position r t)
-        eye (tup/negate (:direction r))
-        normal (shape/normal-at object point)
-        inside (neg? (tup/dot normal eye))
-        normalv (if inside
-                  (tup/negate normal)
-                  normal)]
-    {:t t
-     :object object
-     :point point
-     :over-point (tup/add point (tup/mul normalv 0.00000001))
-     :eyev eye
-     :normalv normalv
-     :reflectv (tup/reflect (r/direction r) normalv)
-     :inside inside
-     :ttl (dec (r/ttl r))}))
+  ([hit r]
+   (prepare-computations hit r [hit]))
+  ([hit r is]
+   (let [{:keys [t object]} hit
+         point (r/position r t)
+         eye (tup/negate (:direction r))
+         normal (shape/normal-at object point)
+         inside (neg? (tup/dot normal eye))
+         normalv (if inside
+                   (tup/negate normal)
+                   normal)
+         [n1 n2] (if (-> object shape/material material/transparent?)
+                   (map material/refractive-index
+                        (refraction-boundary hit is))
+                   [1 1])]
+     {:t t
+      :object object
+      :point point
+      :over-point (tup/add point (tup/mul normalv 0.00000001))
+      :eyev eye
+      :normalv normalv
+      :reflectv (tup/reflect (r/direction r) normalv)
+      :inside inside
+      :ttl (dec (r/ttl r))
+      :n1 n1
+      :n2 n2})))
 (s/fdef prepare-computations
-  :args (s/cat :i ::intersection
-               :r ::r/ray)
+  :args (s/alt
+          :base (s/cat :i ::intersection
+                       :r ::r/ray)
+          :intersections (s/cat :i ::intersection
+                                :r ::r/ray
+                                :is (s/coll-of ::intersection)))
   :ret ::computations)
