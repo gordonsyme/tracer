@@ -70,6 +70,7 @@
             :object (:object i)
             :point (tup/point 0 0 -1)
             :over-point (tup/point 0.0 0.0 -1.00000001)
+            :under-point (tup/point 0.0 0.0 -0.99999999)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :reflectv (tup/vector 0 0 -1)
@@ -88,6 +89,7 @@
             :object (:object i)
             :point (tup/point 0 0 1)
             :over-point (tup/point 0.0 0.0 0.99999999)
+            :under-point (tup/point 0.0 0.0 1.00000001)
             :eyev (tup/vector 0 0 -1)
             :normalv (tup/vector 0 0 -1)
             :reflectv (tup/vector 0 0 -1)
@@ -103,8 +105,8 @@
                                     (transform/translation 0 0 1))
         i (i/intersection 5 shape)
         comps (i/prepare-computations i r)]
-    (is (< (tup/z (:over-point comps))
-           0.00001))
+    (is (> (tup/z (:over-point comps))
+           -0.00001))
     (is (> (tup/z (:point comps))
            (tup/z (:over-point comps))))))
 
@@ -149,3 +151,16 @@
       3 2.5 2.5
       4 2.5 1.5
       5 1.5 1.0)))
+
+(deftest the-under-point-is-offset-below-the-surface
+  (let [r (ray/ray (tup/point 0 0 -5)
+                   (tup/vector 0 0 1))
+        shape (-> (sphere/sphere)
+                  (shape/with-transform (transform/translation 0 0 1))
+                  (shape/with-material glass))
+        i (i/intersection 5 shape)
+        comps (i/prepare-computations i r (i/intersections i))]
+    (is (< (tup/z (:under-point comps))
+           0.00001))
+    (is (< (tup/z (:point comps))
+           (tup/z (:under-point comps))))))

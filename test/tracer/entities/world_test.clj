@@ -1,5 +1,6 @@
 (ns tracer.entities.world-test
   (:require [clojure.test :refer (deftest testing is)]
+            [clojure.spec.alpha :as s]
             [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
             [tracer.test-entities :refer (default-world)]
@@ -17,6 +18,15 @@
             [tracer.entities.world :as world]))
 
 (clojure.test/use-fixtures :once instrument)
+
+(defn- test-pattern
+  []
+  {:transform (transform/identity)
+   :inverse-transform (transform/identity)
+   :shader (fn [point]
+             (colour/colour (tup/x point) (tup/y point) (tup/z point)))})
+(s/fdef test-pattern
+  :ret ::pattern/pattern)
 
 (deftest creating-a-world
   (let [w (world/world)]
@@ -215,3 +225,96 @@
                 r)]
     (is (= (colour/colour 0 0 0)
            (world/reflected-colour w comps)))))
+
+(deftest the-refracted-colour-with-an-opaque-surface
+  (let [w (default-world)
+        shape (first (world/objects w))
+        r (ray/ray (tup/point 0 0 -5)
+                   (tup/vector 0 0 1))
+        xs (i/intersections (i/intersection 4 shape)
+                            (i/intersection 6 shape))
+        comps (i/prepare-computations (first xs) r xs)]
+    (is (= (colour/colour 0 0 0)
+           (world/refracted-colour w comps)))))
+
+(deftest the-refracted-colour-at-the-maximum-recursion-depth
+  (let [w (update-in (default-world)
+                     [:objects 0 :material]
+                     (fn [m]
+                       (-> m
+                           (material/with-transparency 1.0)
+                           (material/with-refractive-index 1.5))))
+        shape (first (world/objects w))
+        r (ray/ray (tup/point 0 0 -5)
+                   (tup/vector 0 0 1)
+                   1)
+        xs (i/intersections (i/intersection 4 shape)
+                            (i/intersection 6 shape))
+        comps (i/prepare-computations (first xs) r xs)]
+    (is (= (colour/colour 0 0 0)
+           (world/refracted-colour w comps)))))
+
+(deftest the-refracted-colour-under-total-internal-reflection
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        w (update-in (default-world)
+                     [:objects 0 :material]
+                     (fn [m]
+                       (-> m
+                           (material/with-transparency 1.0)
+                           (material/with-refractive-index 1.5))))
+        shape (first (world/objects w))
+        r (ray/ray (tup/point 0 0 root-2-over-2)
+                   (tup/vector 0 1 0))
+        xs (i/intersections (i/intersection (- root-2-over-2) shape)
+                            (i/intersection root-2-over-2 shape))
+        comps (i/prepare-computations (second xs) r xs)]
+    (is (= (colour/colour 0 0 0)
+           (world/refracted-colour w comps)))))
+
+(deftest the-refracted-colour-with-a-refracted-ray
+  (let [w (-> (default-world)
+              (update-in
+                [:objects 0 :material]
+                (fn [m]
+                  (-> m
+                      (material/with-ambient 1.0)
+                      (material/with-pattern (test-pattern)))))
+              (update-in
+                [:objects 1 :material]
+                (fn [m]
+                  (-> m
+                      (material/with-transparency 1.0)
+                      (material/with-refractive-index 1.5)))))
+        [a b] (world/objects w)
+        r (ray/ray (tup/point 0 0 0.1)
+                   (tup/vector 0 1 0))
+        xs (i/intersections
+             (i/intersection -0.9899 a)
+             (i/intersection -0.4899 b)
+             (i/intersection 0.4899 b)
+             (i/intersection 0.9899 a))
+        comps (i/prepare-computations (nth xs 2) r xs)]
+    (is (approx (colour/colour 0 0.99888 0.04721)
+                (world/refracted-colour w comps)))))
+
+(deftest shade-hit-with-a-transparent-material
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        floor (-> (plane/plane)
+                  (shape/with-transform (transform/translation 0 -1 0))
+                  (shape/with-material (-> (material/material)
+                                           (material/with-transparency 0.5)
+                                           (material/with-refractive-index 1.5))))
+        ball (-> (sphere/sphere)
+                 (shape/with-transform (transform/translation 0 -3.5 -0.5))
+                 (shape/with-material (-> (material/material)
+                                          (material/with-colour (colour/colour 1 0 0))
+                                          (material/with-ambient 0.5))))
+        w (-> (default-world)
+              (world/add-object floor)
+              (world/add-object ball))
+        r (ray/ray (tup/point 0 0 -3)
+                   (tup/vector 0 (- root-2-over-2) root-2-over-2))
+        xs (i/intersections (i/intersection (Math/sqrt 2) floor))
+        comps (i/prepare-computations (first xs) r xs)]
+    (is  (approx (colour/colour 0.93642 0.68642 0.68642)
+                 (#'world/shade-hit w comps)))))

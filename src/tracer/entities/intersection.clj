@@ -15,10 +15,20 @@
 (s/def ::reflectv ::tup/vector)
 (s/def ::inside boolean?)
 (s/def ::over-point ::tup/point)
+(s/def ::under-point ::tup/point)
 (s/def ::ttl (s/or :zero zero?
                    :pos pos-int?))
 (s/def ::computations
-  (s/keys :req-un [::t ::shape/object ::tup/point ::over-point ::eyev ::normalv ::reflectv ::inside ::ttl]))
+  (s/keys :req-un [::t
+                   ::shape/object
+                   ::tup/point
+                   ::over-point
+                   ::under-point
+                   ::eyev
+                   ::normalv
+                   ::reflectv
+                   ::inside
+                   ::ttl]))
 
 (defn intersection
   [t o]
@@ -106,6 +116,7 @@
       :object object
       :point point
       :over-point (tup/add point (tup/mul normalv 0.00000001))
+      :under-point (tup/add point (tup/mul normalv -0.00000001))
       :eyev eye
       :normalv normalv
       :reflectv (tup/reflect (r/direction r) normalv)

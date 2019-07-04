@@ -88,6 +88,30 @@
                :comps ::i/computations)
   :ret ::colour/colour)
 
+(defn refracted-colour
+  [w comps]
+  (let [{:keys [eyev normalv under-point n1 n2 object ttl]} comps
+        material (shape/material object)
+        transparency (:transparency material)
+        n-ratio (/ n1 n2)
+        cos-i (tup/dot eyev normalv)
+        sin2-t (* (* n-ratio n-ratio)
+                  (- 1 (* cos-i cos-i)))]
+    (if (or (zero? ttl)
+            (zero? transparency)
+            (> sin2-t 1))
+      (colour/colour 0 0 0)
+      (let [cos-t (Math/sqrt (- 1 sin2-t))
+            direction (tup/sub
+                        (tup/mul normalv (- (* n-ratio cos-i) cos-t))
+                        (tup/mul eyev n-ratio))]
+        (colour/mul (colour-at w (ray/ray under-point direction ttl))
+                    transparency)))))
+(s/fdef refracted-colour
+  :args (s/cat :w ::world
+               :comps ::i/computations)
+  :ret ::colour/colour)
+
 (defn- shade-hit
   [w comps]
   (let [{:keys [object over-point eyev normalv]} comps
@@ -109,8 +133,9 @@
                                               eyev
                                               normalv
                                               (shadowed? w light over-point))))
-        reflected-colour (reflected-colour w comps)]
-    (colour/add surface-colour reflected-colour)))
+        reflected-colour (reflected-colour w comps)
+        refracted-colour (refracted-colour w comps)]
+    (reduce colour/add surface-colour [reflected-colour refracted-colour])))
 (s/fdef shade-hit
   :args (s/cat :w ::world
                :comps ::i/computations)
