@@ -14,7 +14,7 @@
   ([o d]
    {:origin o
     :direction d
-    :ttl 4})
+    :ttl 5})
   ([o d ttl]
    {:origin o
     :direction d

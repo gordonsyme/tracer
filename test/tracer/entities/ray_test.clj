@@ -14,7 +14,7 @@
       (let [r (ray/ray origin direction)]
         (is (= origin (:origin r)))
         (is (= direction (:direction r)))
-        (is (= 4 (:ttl r)))))
+        (is (= 5 (:ttl r)))))
     (testing "it can be created with a different ttl"
       (let [r (ray/ray origin direction 45)]
         (is (= origin (:origin r)))
@@ -37,11 +37,11 @@
     (testing "translating"
       (is (= {:origin (tup/point 4 6 8)
               :direction (tup/vector 0 1 0)
-              :ttl 4}
+              :ttl 5}
              (ray/transform r (transform/translation 3 4 5)))))
 
     (testing "scaling"
       (is (= {:origin (tup/point 2 6 12)
               :direction (tup/vector 0 3 0)
-              :ttl 4}
+              :ttl 5}
              (ray/transform r (transform/scaling 2 3 4)))))))
