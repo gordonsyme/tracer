@@ -135,7 +135,12 @@
                                               (shadowed? w light over-point))))
         reflected-colour (reflected-colour w comps)
         refracted-colour (refracted-colour w comps)]
-    (reduce colour/add surface-colour [reflected-colour refracted-colour])))
+    (if (and (pos? (:reflective material))
+             (pos? (:transparency material)))
+      (let [reflectance (i/schlick-reflectance comps)]
+        (reduce colour/add surface-colour [(colour/mul reflected-colour reflectance)
+                                           (colour/mul refracted-colour (- 1 reflectance))]))
+      (reduce colour/add surface-colour [reflected-colour refracted-colour]))))
 (s/fdef shade-hit
   :args (s/cat :w ::world
                :comps ::i/computations)

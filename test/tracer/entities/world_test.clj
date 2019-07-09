@@ -318,3 +318,26 @@
         comps (i/prepare-computations (first xs) r xs)]
     (is  (approx (colour/colour 0.93642 0.68642 0.68642)
                  (#'world/shade-hit w comps)))))
+
+(deftest shade-hit-with-a-reflective-transparent-material
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        floor (-> (plane/plane)
+                  (shape/with-transform (transform/translation 0 -1 0))
+                  (shape/with-material (-> (material/material)
+                                           (material/with-reflective 0.5)
+                                           (material/with-transparency 0.5)
+                                           (material/with-refractive-index 1.5))))
+        ball (-> (sphere/sphere)
+                 (shape/with-transform (transform/translation 0 -3.5 -0.5))
+                 (shape/with-material (-> (material/material)
+                                          (material/with-colour (colour/colour 1 0 0))
+                                          (material/with-ambient 0.5))))
+        w (-> (default-world)
+              (world/add-object floor)
+              (world/add-object ball))
+        r (ray/ray (tup/point 0 0 -3)
+                   (tup/vector 0 (- root-2-over-2) root-2-over-2))
+        xs (i/intersections (i/intersection (Math/sqrt 2) floor))
+        comps (i/prepare-computations (first xs) r xs)]
+    (is  (approx (colour/colour 0.93391 0.69643 0.69243)
+                 (#'world/shade-hit w comps)))))

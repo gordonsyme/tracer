@@ -1,5 +1,6 @@
 (ns tracer.entities.intersection-test
   (:require [clojure.test :refer (deftest testing is are)]
+            [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
@@ -164,3 +165,30 @@
            0.00001))
     (is (< (tup/z (:point comps))
            (tup/z (:under-point comps))))))
+
+(deftest the-schlick-approximation-under-total-internal-reflection
+  (let [root-2-over-2 (/ (Math/sqrt 2) 2)
+        shape (shape/with-material (sphere/sphere) glass)
+        r (ray/ray (tup/point 0 0 root-2-over-2)
+                   (tup/vector 0 1 0))
+        xs (i/intersections (i/intersection (- root-2-over-2) shape)
+                            (i/intersection root-2-over-2 shape))
+        comps (i/prepare-computations (second xs) r xs)]
+    (is (= 1.0 (i/schlick-reflectance comps)))))
+
+(deftest the-schlick-approximation-with-a-perpendicular-viewing-angle
+  (let [shape (shape/with-material (sphere/sphere) glass)
+        r (ray/ray (tup/point 0 0 0)
+                   (tup/vector 0 1 0))
+        xs (i/intersections (i/intersection -1 shape)
+                            (i/intersection 1 shape))
+        comps (i/prepare-computations (second xs) r xs)]
+    (is (approx 0.04 (i/schlick-reflectance comps)))))
+
+(deftest the-schlick-approximation-with-a-perpendicular-viewing-angle
+  (let [shape (shape/with-material (sphere/sphere) glass)
+        r (ray/ray (tup/point 0 0.99 -2)
+                   (tup/vector 0 0 1))
+        xs (i/intersections (i/intersection 1.8589 shape))
+        comps (i/prepare-computations (first xs) r xs)]
+    (is (approx 0.48873 (i/schlick-reflectance comps)))))

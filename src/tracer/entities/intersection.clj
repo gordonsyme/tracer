@@ -132,3 +132,27 @@
                                 :r ::r/ray
                                 :is (s/coll-of ::intersection)))
   :ret ::computations)
+
+(defn schlick-reflectance
+  [comps]
+  ;; This is doing the same work as world/refracted-colour, should try to
+  ;; combine, only compute once
+  (let [{:keys [eyev normalv n1 n2]} comps
+        cos (tup/dot eyev normalv)
+        n-ratio (/ n1 n2)
+        sin2-t (* (* n-ratio n-ratio)
+                  (- 1 (* cos cos)))
+        cos (if (> n1 n2)
+              (Math/sqrt (- 1 sin2-t))
+              cos)]
+    (if (and (> n1 n2)
+             (> sin2-t 1.0))
+      1.0
+      (let [root-r0 (/ (- n1 n2)
+                       (+ n1 n2))
+            r0 (* root-r0 root-r0)]
+        (+ r0 (* (- 1 r0)
+                 (Math/pow (- 1 cos) 5)))))))
+(s/fdef schlick-reflectance
+  :args (s/cat :comps ::computations)
+  :ret number?)

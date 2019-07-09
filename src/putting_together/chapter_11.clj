@@ -19,7 +19,7 @@
                   (pattern/checks (colour/colour 0 0 0)
                                   (colour/colour 1 1 1))
                   (-> (transform/identity)
-                      (transform/scale 2 2 2)
+                      (transform/scale 1.5 1.5 1.5)
                       (transform/translate 0 0.1 0)))
         floor (-> (plane/plane)
                   (shape/with-transform (transform/translation 0 -10.1 0))
@@ -28,7 +28,8 @@
         material (-> (material/material)
                      (material/with-diffuse 0.1)
                      (material/with-shininess 300)
-                     (material/with-transparency 1))
+                     (material/with-transparency 1)
+                     (material/with-reflective 1))
         glass-sphere (-> (sphere/sphere)
                          (shape/with-material
                            (material/with-refractive-index material material/glass)))
@@ -44,7 +45,7 @@
                   (world/add-object glass-sphere)
                   (world/add-object air-sphere))
         camera (camera/with-transform
-                 (camera/camera 500 500 (/ Math/PI 3))
+                 (camera/camera 250 250 (/ Math/PI 3))
                  (transform/view-transform (tup/point 0 2.5 0)
                                            (tup/point 0 0 0)
                                            (tup/vector 0 0 1)))]
