@@ -24,6 +24,13 @@
             :pattern nil}
            m))))
 
+(deftest predefined-materials
+  (material/vacuum)
+  (material/air)
+  (material/water)
+  (material/glass)
+  (material/diamond))
+
 (deftest lighting-tests
   (let [root-2-over-2 (/ (Math/sqrt 2) 2)
         m (material/material)

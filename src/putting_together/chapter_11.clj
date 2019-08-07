@@ -25,18 +25,14 @@
                   (shape/with-transform (transform/translation 0 -10.1 0))
                   (shape/with-material
                     (material/with-pattern (material/material) checked)))
-        material (-> (material/material)
-                     (material/with-diffuse 0.1)
-                     (material/with-shininess 300)
-                     (material/with-transparency 1)
-                     (material/with-reflective 1))
         glass-sphere (-> (sphere/sphere)
                          (shape/with-material
-                           (material/with-refractive-index material material/glass)))
+                           (-> (material/glass)
+                               (material/with-diffuse 0.1)
+                               (material/with-shininess 300))))
         air-sphere (-> (sphere/sphere)
                        (shape/with-transform (transform/scaling 0.5 0.5 0.5))
-                       (shape/with-material
-                         (material/with-refractive-index material material/air)))
+                       (shape/with-material (material/air)))
         world (-> (world/world)
                   (world/add-light (light/point-light
                                      (tup/point 10 10 0)
@@ -125,11 +121,10 @@
                            (-> (transform/scaling 0.5 0.5 0.5)
                                (transform/translate 1.5 0.5 -0.5)))
                          (shape/with-material
-                           (-> (material/material)
+                           (-> (material/glass)
                                (material/with-colour (colour/colour 0.1 0.1 0.1))
                                (material/with-diffuse 0.1)
                                (material/with-transparency 0.9)
-                               (material/with-refractive-index material/glass)
                                (material/with-specular 0.3))))
         left-sphere (-> (sphere/sphere)
                         (shape/with-transform

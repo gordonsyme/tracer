@@ -28,12 +28,6 @@
                    ::transparency
                    ::refractive-index]))
 
-(def vacuum 1.0)
-(def air 1.00029)
-(def water 1.333)
-(def glass 1.52)
-(def diamond 2.417)
-
 (defn material
   []
   {:colour (colour/colour 1 1 1)
@@ -167,3 +161,48 @@
                :normal ::tup/vector
                :in-shadow? boolean?)
   :ret ::colour/colour)
+
+
+(defn vacuum
+  []
+  (-> (material)
+      (with-refractive-index 1.0)
+      (with-transparency 0.95)))
+(s/fdef vacuum
+  :ret ::material)
+
+(defn air
+  []
+  (-> (material)
+      (with-refractive-index 1.00029)
+      (with-transparency 0.95)
+      (with-reflective 0.95)))
+(s/fdef air
+  :ret ::material)
+
+(defn water
+  []
+  (-> (material)
+      (with-refractive-index 1.333)
+      (with-transparency 0.95)
+      (with-reflective 0.95)))
+(s/fdef water
+  :ret ::material)
+
+(defn glass
+  []
+  (-> (material)
+      (with-refractive-index 1.52)
+      (with-transparency 0.95)
+      (with-reflective 0.95)))
+(s/fdef glass
+  :ret ::material)
+
+(defn diamond
+  []
+  (-> (material)
+      (with-refractive-index 2.417)
+      (with-transparency 0.95)
+      (with-reflective 0.95)))
+(s/fdef diamond
+  :ret ::material)
