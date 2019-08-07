@@ -137,8 +137,23 @@
         light-dot-normal (tup/dot lightv normal)]
     (if (or in-shadow?
             (neg? light-dot-normal))
-      ;; light is on the wrong side of the surface, there is no contribution
+      ;; light is on the wrong side of the surface when the dot product of the
+      ;; light vector and normal vector is negative, there is no contribution
       ;; from diffuse or specular
+      ;;
+      ;; TODO when a point is in shadow the amount of the shadow should be
+      ;; determined by the transparency of the object shadowing it, that gets
+      ;; much harder when there are multiple objects in the path between the
+      ;; point being coloured and the light-source.
+      ;; As an approximation, multiplying the transparencies of the objects and
+      ;; using that to weight the amount of light that gets through may be
+      ;; reasonable.
+      ;; E.g. two objects with transparency 0.5 and 0.7 reduce the amount of
+      ;; light by half, and then by a further seven tenths.
+      ;; So 0.5 * 0.7 == 0.35, which means about 35% of the light gets through,
+      ;; so the final colour is reduced to 35% of its intensity.
+      ;; This does not account for the thickness of the material, which clearly
+      ;; matters.
       ambient
       (let [diffuse (colour/mul effective-colour (* (:diffuse m) light-dot-normal))
             reflectv (tup/reflect (tup/negate lightv) normal)
