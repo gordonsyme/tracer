@@ -6,7 +6,7 @@
             [tracer.entities.transform :as transform]
             [tracer.entities.tuple :as tup]))
 
-(def ^:private EPSILON 0.00001)
+(def ^:private EPSILON 0.000001)
 
 (s/def ::minimum double?)
 (s/def ::maximum double?)
