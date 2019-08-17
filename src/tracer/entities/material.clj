@@ -221,3 +221,11 @@
       (with-reflective 0.95)))
 (s/fdef diamond
   :ret ::material)
+
+(defn mirror
+  []
+  (-> (material)
+      (with-reflective 0.9)
+      (with-diffuse 0.7)
+      (with-specular 0)
+      (with-colour (colour/colour 0.1 0.1 0.1))))
