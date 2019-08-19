@@ -1,0 +1,20 @@
+version: 2.1
+
+executors:
+  clojure:
+    docker:
+      - image: clojure:openjdk-8-lein
+
+jobs:
+  build:
+    executor: clojure
+    steps:
+      - checkout
+      - run: lein test
+      - run: lein cloverage --ns-exclude-regex "^putting-together.*"
+
+workflows:
+  version: 2
+  make-rocket-go-now:
+    jobs:
+      - build
