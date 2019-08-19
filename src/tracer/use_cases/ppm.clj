@@ -7,7 +7,7 @@
 
 (defn- colour->ppm
   [c]
-  (letfn [(convert [x]
+  (letfn [(convert [^double x]
             (min 255
                  (max 0
                       (int (Math/ceil (* 255 x))))))]

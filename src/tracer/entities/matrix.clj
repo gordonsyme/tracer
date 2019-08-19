@@ -51,14 +51,14 @@
 (defn mul
   "Multiply two 4x4 matrices."
   [a b]
-  (let [[[a00 a01 a02 a03]
-         [a10 a11 a12 a13]
-         [a20 a21 a22 a23]
-         [a30 a31 a32 a33]] a
-        [[b00 b01 b02 b03]
-         [b10 b11 b12 b13]
-         [b20 b21 b22 b23]
-         [b30 b31 b32 b33]] b]
+  (let [[[^double a00 ^double a01 ^double a02 ^double a03]
+         [^double a10 ^double a11 ^double a12 ^double a13]
+         [^double a20 ^double a21 ^double a22 ^double a23]
+         [^double a30 ^double a31 ^double a32 ^double a33]] a
+        [[^double b00 ^double b01 ^double b02 ^double b03]
+         [^double b10 ^double b11 ^double b12 ^double b13]
+         [^double b20 ^double b21 ^double b22 ^double b23]
+         [^double b30 ^double b31 ^double b32 ^double b33]] b]
   [[(+ (* a00 b00) (* a01 b10) (* a02 b20) (* a03 b30)) (+ (* a00 b01) (* a01 b11) (* a02 b21) (* a03 b31)) (+ (* a00 b02) (* a01 b12) (* a02 b22) (* a03 b32)) (+ (* a00 b03) (* a01 b13) (* a02 b23) (* a03 b33))]
    [(+ (* a10 b00) (* a11 b10) (* a12 b20) (* a13 b30)) (+ (* a10 b01) (* a11 b11) (* a12 b21) (* a13 b31)) (+ (* a10 b02) (* a11 b12) (* a12 b22) (* a13 b32)) (+ (* a10 b03) (* a11 b13) (* a12 b23) (* a13 b33))]
    [(+ (* a20 b00) (* a21 b10) (* a22 b20) (* a23 b30)) (+ (* a20 b01) (* a21 b11) (* a22 b21) (* a23 b31)) (+ (* a20 b02) (* a21 b12) (* a22 b22) (* a23 b32)) (+ (* a20 b03) (* a21 b13) (* a22 b23) (* a23 b33))]
@@ -73,11 +73,11 @@
 
   Returns a tuple."
   [mat tup]
-  (let [[[a00 a01 a02 a03]
-         [a10 a11 a12 a13]
-         [a20 a21 a22 a23]
-         [a30 a31 a32 a33]] mat
-        [b00 b10 b20 b30] tup]
+  (let [[[^double a00 ^double a01 ^double a02 ^double a03]
+         [^double a10 ^double a11 ^double a12 ^double a13]
+         [^double a20 ^double a21 ^double a22 ^double a23]
+         [^double a30 ^double a31 ^double a32 ^double a33]] mat
+        [^double b00 ^double b10 ^double b20 ^double b30] tup]
     [(+ (* a00 b00) (* a01 b10) (* a02 b20) (* a03 b30))
      (+ (* a10 b00) (* a11 b10) (* a12 b20) (* a13 b30))
      (+ (* a20 b00) (* a21 b10) (* a22 b20) (* a23 b30))
