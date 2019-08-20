@@ -51,8 +51,8 @@
 
 (deftest intersecting-a-constrained-cylinder
   (let [c (-> (cylinder/cylinder)
-              (cylinder/with-minimum 1.0)
-              (cylinder/with-maximum 2.0))]
+              (cylinder/with-minimum 1)
+              (cylinder/with-maximum 2))]
     (are [point direction num-xs]
          (let [r (ray/ray point (tup/normalise direction))
                xs (i/intersect c r)]
@@ -63,3 +63,35 @@
       (tup/point 0 2 -5) (tup/vector 0 0 1) 0
       (tup/point 0 1 -5) (tup/vector 0 0 1) 0
       (tup/point 0 1.5 -2) (tup/vector 0 0 1) 2)))
+
+(deftest the-default-closed-value-for-a-cylinder
+  (is (false? (:closed (cylinder/cylinder)))))
+
+(deftest intersecting-the-caps-of-a-closed-cylinder
+  (let [c (-> (cylinder/cylinder)
+              (cylinder/with-minimum 1)
+              (cylinder/with-maximum 2)
+              (cylinder/with-closed true))]
+    (are [point direction num-xs]
+         (let [r (ray/ray point (tup/normalise direction))
+               xs (i/intersect c r)]
+           (= num-xs (count xs)))
+      (tup/point 0  3  0) (tup/vector 0 -1 0) 2
+      (tup/point 0  3 -2) (tup/vector 0 -1 2) 2
+      (tup/point 0  4 -2) (tup/vector 0 -1 1) 2
+      (tup/point 0  0 -2) (tup/vector 0  1 2) 2
+      (tup/point 0 -1 -2) (tup/vector 0  1 1) 2)))
+
+(deftest the-normal-vector-on-a-cylinder's-end-caps
+  (let [c (-> (cylinder/cylinder)
+              (cylinder/with-minimum 1)
+              (cylinder/with-maximum 2)
+              (cylinder/with-closed true))]
+    (are [p expected]
+         (= expected (shape/local-normal-at c p))
+      (tup/point 0   1 0)   (tup/vector 0 -1 0)
+      (tup/point 0.5 1 0)   (tup/vector 0 -1 0)
+      (tup/point 0   1 0.5) (tup/vector 0 -1 0)
+      (tup/point 0   2 0)   (tup/vector 0 1 0)
+      (tup/point 0.5 2 0)   (tup/vector 0 1 0)
+      (tup/point 0   2 0.5) (tup/vector 0 1 0))))
