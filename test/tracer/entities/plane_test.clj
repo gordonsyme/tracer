@@ -1,5 +1,6 @@
 (ns tracer.entities.plane-test
   (:require [clojure.test :refer (deftest testing is)]
+            [tracer.comparators :refer (eq)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.plane :as plane]
             [tracer.entities.ray :as ray]
@@ -10,14 +11,14 @@
 
 (deftest the-normal-of-a-plane-is-constant-everywhere
   (let [p (plane/plane)]
-    (is (= (tup/vector 0 1 0)
-           (shape/local-normal-at p (tup/point 0 0 0))))
+    (is (eq (tup/vector 0 1 0)
+            (shape/local-normal-at p (tup/point 0 0 0))))
 
-    (is (= (tup/vector 0 1 0)
-           (shape/local-normal-at p (tup/point 10 0 -10))))
+    (is (eq (tup/vector 0 1 0)
+            (shape/local-normal-at p (tup/point 10 0 -10))))
 
-    (is (= (tup/vector 0 1 0)
-           (shape/local-normal-at p (tup/point -5 0 150))))))
+    (is (eq (tup/vector 0 1 0)
+            (shape/local-normal-at p (tup/point -5 0 150))))))
 
 (deftest plane-intersections
   (testing "intersect with a ray parallel to the plane"

@@ -1,6 +1,6 @@
 (ns tracer.entities.sphere-test
   (:require [clojure.test :refer (deftest testing is)]
-            [tracer.comparators :refer (approx)]
+            [tracer.comparators :refer (approx eq)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
@@ -66,23 +66,23 @@
 (deftest surface-normals
   (let [s (sphere/sphere)]
     (testing "the normal on a sphere at a point on the x axis"
-      (is (= (tup/vector 1 0 0)
-             (shape/normal-at s (tup/point 1 0 0)))))
+      (is (eq (tup/vector 1 0 0)
+              (shape/normal-at s (tup/point 1 0 0)))))
     (testing "the normal on a sphere at a point on the y axis"
-      (is (= (tup/vector 0 1 0)
-             (shape/normal-at s (tup/point 0 1 0)))))
+      (is (eq (tup/vector 0 1 0)
+              (shape/normal-at s (tup/point 0 1 0)))))
     (testing "the normal on a sphere at a point on the z axis"
-      (is (= (tup/vector 0 0 1)
-             (shape/normal-at s (tup/point 0 0 1)))))
+      (is (eq (tup/vector 0 0 1)
+              (shape/normal-at s (tup/point 0 0 1)))))
     (testing "the normal on a sphere at a nonaxial point"
       (let [v (/ (Math/sqrt 3) 3)]
-        (is (= (tup/vector v v v)
-               (shape/normal-at s (tup/point v v v))))))
+        (is (eq (tup/vector v v v)
+                (shape/normal-at s (tup/point v v v))))))
 
     (testing "normals are normalised"
       (let [v (/ (Math/sqrt 3) 3)
             n (shape/normal-at s (tup/point v v v))]
-        (is (= n (tup/normalise n)))))))
+        (is (eq n (tup/normalise n)))))))
 
 (deftest normals-on-transformed-spheres
   (testing "normal on a translated sphere"

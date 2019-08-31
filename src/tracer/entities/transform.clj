@@ -184,9 +184,9 @@
   (let [forward (tup/normalise (tup/sub to from))
         left (tup/cross forward (tup/normalise up))
         true-up (tup/cross left forward)
-        orientation (mat/matrix left
-                                true-up
-                                (tup/negate forward)
+        orientation (mat/matrix (vec left)
+                                (vec true-up)
+                                (vec (tup/negate forward))
                                 [0 0 0 1])]
     (mat/mul orientation
              (clojure.core/apply translation

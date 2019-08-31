@@ -105,9 +105,9 @@
       ;; The correct thing to do is multiply by the inverse of (submatrix
       ;; transform 3 3) but that reduces 4-component tuples down to 3-component
       ;; tuples.
-      (assoc (mat/mult (mat/transpose inv-transform) object-normal)
-             3
-             0.0))))
+      (tup/set-w
+        (mat/mult (mat/transpose inv-transform) object-normal)
+        0.0))))
 (s/fdef normal-at
   :args (s/cat :o ::object
                :p ::tup/point)

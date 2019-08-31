@@ -1,52 +1,64 @@
 (ns tracer.entities.tuple
   (:refer-clojure :exclude [vector? vector])
   (:require [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]))
+            [clojure.spec.gen.alpha :as gen]
+            [tracer.types :as types]))
 
-(s/def ::tuple (s/and (s/coll-of number? :count 4)
-                      clojure.core/vector?))
+(s/def ::tuple (s/and ::types/double-array
+                      #(= 4 (count %))))
+#_(s/def ::tuple (s/coll-of number? :count 4))
 
 (defn tuple
   "Create a tuple, a 4-element vector of numbers"
   [x y z w]
-  [(double x) (double y) (double z) (double w)])
+  (double-array [(double x) (double y) (double z) (double w)]))
 
 (s/fdef tuple
   :args (s/cat :x number? :y number? :z number? :w number?)
   :ret ::tuple)
 
 (defn x
-  [a1]
-  (first a1))
+  [^doubles a1]
+  (aget a1 0))
 (s/fdef x
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
 (defn y
-  [a1]
-  (second a1))
+  [^doubles a1]
+  (aget a1 1))
 (s/fdef y
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
 (defn z
-  [a1]
-  (nth a1 2))
+  [^doubles a1]
+  (aget a1 2))
 (s/fdef z
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
 (defn w
-  [a1]
-  (nth a1 3))
+  [^doubles a1]
+  (aget a1 3))
 (s/fdef w
   :args (s/cat :a1 ::tuple)
   :ret double?)
 
+(defn set-w
+  [^doubles a1 ^double w]
+  (aset a1 3 w)
+  a1)
+(s/fdef set-w
+  :args (s/cat :a1 ::tuple
+               :w double?)
+  :ret ::tuple)
+
 (defn point?
   "Returns true if a1 is a tuple with w=1.0"
-  [a1]
-  (= 1.0 (double (nth a1 3))))
+  [^doubles a1]
+  (and (= 4 (count a1))
+       (= 1.0 (aget a1 3))))
 
 (s/fdef point?
   :args (s/cat :a1 ::tuple)
@@ -71,8 +83,9 @@
 
 (defn vector?
   "Returns true if a1 is a tuple with w=0.0"
-  [a1]
-  (zero? (nth a1 3)))
+  [^doubles a1]
+  (and (= 4 (count a1))
+       (zero? (aget a1 3))))
 
 (s/fdef vector?
   :args (s/cat :a1 ::tuple)
@@ -98,7 +111,8 @@
 (defn add
   "Add two tuples"
   [a1 a2]
-  (mapv + a1 a2))
+  (double-array
+    (map + a1 a2)))
 
 (s/fdef add
   :args (s/or :vector-point (s/cat :a1 ::vector :a2 ::point)
@@ -110,7 +124,8 @@
 (defn sub
   "Subtract two tuples"
   [a1 a2]
-  (mapv - a1 a2))
+  (double-array
+    (map - a1 a2)))
 
 (s/fdef sub
   :args (s/or :vector-vector (s/cat :a1 ::vector :a2 ::vector)
@@ -122,7 +137,7 @@
 (defn negate
   "Negate a tuple"
   [a1]
-  (mapv - a1))
+  (double-array (map - a1)))
 
 (s/fdef negate
   :args (s/cat :a1 ::tuple)
@@ -131,7 +146,8 @@
 (defn mul
   "Multiply a tuple by a scalar"
   [a1 s]
-  (mapv #(* % s) a1))
+  (double-array
+    (map #(* % s) a1)))
 
 (s/fdef mul
   :args (s/cat :a1 ::tuple :s number?)
@@ -141,7 +157,8 @@
   "Divide a tuple by a scalar."
   [a1 s]
   (let [s (double s)]
-    (mapv #(/ % s) a1)))
+    (double-array
+      (map #(/ % s) a1))))
 
 (s/fdef div
   :args (s/cat :a1 ::tuple :s number?)
@@ -149,7 +166,7 @@
 
 (defn magnitude
   "Compute the magnitude of a vector"
-  [v]
+  [^doubles v]
   (Math/sqrt (reduce + (map #(* % %) v))))
 
 (s/fdef magnitude
@@ -157,9 +174,9 @@
   :ret double?)
 
 (defn normalise
-  [v]
+  [^doubles v]
   (let [m (magnitude v)]
-    (mapv #(/ % m) v)))
+    (div v m)))
 
 (s/fdef normalise
   :args (s/cat :v ::vector)
@@ -176,12 +193,13 @@
 
 (defn cross
   [v1 v2]
-  (vector (- (* (y v1) (z v2))
-             (* (z v1) (y v2)))
-          (- (* (z v1) (x v2))
-             (* (x v1) (z v2)))
-          (- (* (x v1) (y v2))
-             (* (y v1) (x v2)))))
+  (vector
+    (- (* (y v1) (z v2))
+       (* (z v1) (y v2)))
+    (- (* (z v1) (x v2))
+       (* (x v1) (z v2)))
+    (- (* (x v1) (y v2))
+       (* (y v1) (x v2)))))
 
 (s/fdef cross
   :args (s/cat :v1 ::vector

@@ -78,10 +78,11 @@
          [^double a20 ^double a21 ^double a22 ^double a23]
          [^double a30 ^double a31 ^double a32 ^double a33]] mat
         [^double b00 ^double b10 ^double b20 ^double b30] tup]
-    [(+ (* a00 b00) (* a01 b10) (* a02 b20) (* a03 b30))
-     (+ (* a10 b00) (* a11 b10) (* a12 b20) (* a13 b30))
-     (+ (* a20 b00) (* a21 b10) (* a22 b20) (* a23 b30))
-     (+ (* a30 b00) (* a31 b10) (* a32 b20) (* a33 b30))]))
+    (t/tuple
+      (+ (* a00 b00) (* a01 b10) (* a02 b20) (* a03 b30))
+      (+ (* a10 b00) (* a11 b10) (* a12 b20) (* a13 b30))
+      (+ (* a20 b00) (* a21 b10) (* a22 b20) (* a23 b30))
+      (+ (* a30 b00) (* a31 b10) (* a32 b20) (* a33 b30)))))
 (s/fdef mult
   :args (s/cat :mat ::matrix
                :tup ::t/tuple)

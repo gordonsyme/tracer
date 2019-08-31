@@ -1,6 +1,6 @@
 (ns tracer.entities.matrix-test
   (:require [clojure.test :refer (deftest testing is)]
-            [tracer.comparators :refer (approx)]
+            [tracer.comparators :refer (approx eq)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.tuple :as t]
             [tracer.entities.matrix :as mat]))
@@ -89,8 +89,8 @@
                       [8 6 4 1]
                       [0 0 0 1])
         b (t/tuple 1 2 3 1)]
-    (is (= (t/tuple 18 24 33 1)
-           (mat/mult a b)))))
+    (is (eq (t/tuple 18 24 33 1)
+            (mat/mult a b)))))
 
 (deftest identity-makes-identity-matrices
   (is (= (mat/matrix [1 0]
@@ -118,7 +118,7 @@
 
 (deftest multiplying-the-identity-matrix-by-a-tuple
   (let [a (t/tuple 1 2 3 4)]
-    (is (= a (mat/mult (mat/identity 4) a)))))
+    (is (eq a (mat/mult (mat/identity 4) a)))))
 
 (deftest transposing-a-matrix
   (let [a (mat/matrix [0 9 3 0]

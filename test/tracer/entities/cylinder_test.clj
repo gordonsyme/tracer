@@ -1,7 +1,7 @@
 (ns tracer.entities.cylinder-test
   (:require [clojure.test :refer (are deftest is)]
             [tracer.fixtures :refer (instrument)]
-            [tracer.comparators :refer (approx)]
+            [tracer.comparators :refer (approx eq)]
             [tracer.entities.cylinder :as cylinder]
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
@@ -35,8 +35,8 @@
 (deftest normal-vector-on-a-cylinder
   (let [c (cylinder/cylinder)]
     (are [p expected]
-         (= expected
-            (shape/local-normal-at c p))
+         (eq expected
+             (shape/local-normal-at c p))
       (tup/point 1 0 0) (tup/vector 1 0 0)
       (tup/point 0 5 -1) (tup/vector 0 0 -1)
       (tup/point 0 -2 1) (tup/vector 0 0 1)
@@ -88,7 +88,7 @@
               (cylinder/with-maximum 2)
               (cylinder/with-closed true))]
     (are [p expected]
-         (= expected (shape/local-normal-at c p))
+         (eq expected (shape/local-normal-at c p))
       (tup/point 0   1 0)   (tup/vector 0 -1 0)
       (tup/point 0.5 1 0)   (tup/vector 0 -1 0)
       (tup/point 0   1 0.5) (tup/vector 0 -1 0)

@@ -1,6 +1,6 @@
 (ns tracer.entities.intersection-test
   (:require [clojure.test :refer (deftest testing is are)]
-            [tracer.comparators :refer (approx)]
+            [tracer.comparators :refer (approx eq)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]
             [tracer.entities.ray :as ray]
@@ -118,8 +118,8 @@
                    (tup/vector 0 (- root-2-over-2) root-2-over-2))
         i (i/intersection (Math/sqrt 2) shape)
         comps (i/prepare-computations i r)]
-    (is (= (tup/vector 0 root-2-over-2 root-2-over-2)
-           (:reflectv comps)))))
+    (is (eq (tup/vector 0 root-2-over-2 root-2-over-2)
+            (:reflectv comps)))))
 
 (deftest finding-n1-and-n2-at-various-intersections
   (let [a (-> (sphere/sphere)
