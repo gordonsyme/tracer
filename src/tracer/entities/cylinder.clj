@@ -4,9 +4,8 @@
             [tracer.entities.ray :as ray]
             [tracer.entities.shape :as shape]
             [tracer.entities.transform :as transform]
-            [tracer.entities.tuple :as tup]))
-
-(def ^:private EPSILON 0.00001)
+            [tracer.entities.tuple :as tup]
+            [tracer.math :refer (EPSILON)]))
 
 (s/def ::minimum double?)
 (s/def ::maximum double?)
