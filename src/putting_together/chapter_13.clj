@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io]
             [tracer.entities.camera :as camera]
             [tracer.entities.colour :as colour]
+            [tracer.entities.cone :as cone]
             [tracer.entities.cube :as cube]
             [tracer.entities.cylinder :as cylinder]
             [tracer.entities.light :as light]
@@ -118,6 +119,16 @@
                        (transform/translate 0.5 0.58 -0.5))))]
     [cyl1 cyl2 cyl3 cyl4 cyl5]))
 
+(defn- cone
+  []
+  [(-> (cone/cone)
+       (cone/with-minimum -0.25)
+       (cone/with-maximum 0.25)
+       (cone/with-closed true)
+       (shape/with-transform
+         (-> (transform/identity)
+             (transform/translate 0.2 0.8 0))))])
+
 (defn go
   [filename]
   (let [checked (pattern/with-transform
@@ -161,7 +172,9 @@
         world (reduce (fn [world obj]
                         (world/add-object world obj))
                       world
-                      (concat (table) (towers-of-hanoi)))
+                      (concat (table)
+                              (towers-of-hanoi)
+                              (cone)))
         camera (camera/with-transform
                  (camera/camera 1440 800 (/ Math/PI 3))
                  (transform/view-transform (tup/point 0 2 -5)
