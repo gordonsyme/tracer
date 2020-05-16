@@ -22,7 +22,7 @@
   :ret ::sphere)
 
 (defmethod shape/local-intersect :sphere
-  [s ray]
+  [_s ray]
   (let [sphere-to-ray (tup/sub (ray/origin ray) (tup/point 0 0 0))
         a (tup/dot (ray/direction ray) (ray/direction ray))
         b (* 2 (tup/dot (ray/direction ray)
@@ -39,5 +39,5 @@
             (* 2 a))]))))
 
 (defmethod shape/local-normal-at :sphere
-  [s p]
+  [_s p]
   (tup/sub p (tup/point 0 0 0)))

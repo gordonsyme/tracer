@@ -1,5 +1,5 @@
 (ns tracer.entities.light-test
-  (:require [clojure.test :refer (deftest testing is)]
+  (:require [clojure.test :refer (deftest is)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.colour :as colour]
             [tracer.entities.light :as light]

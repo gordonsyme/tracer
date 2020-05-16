@@ -1,5 +1,5 @@
 (ns tracer.entities.colour-test
-  (:require [clojure.test :refer (deftest testing is)]
+  (:require [clojure.test :refer (deftest is)]
             [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.colour :as sut]))

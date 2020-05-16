@@ -38,7 +38,7 @@
   :ret (s/coll-of double? :count 2))
 
 (defmethod shape/local-intersect :cube
-  [c ray]
+  [_c ray]
   ;; returns a list of pairs, need max of first, min of second
   (let [ts (map (fn [axis]
                   (check-axis (-> ray ray/origin axis)
@@ -51,7 +51,7 @@
       [tmin tmax])))
 
 (defmethod shape/local-normal-at :cube
-  [c point]
+  [_c point]
   (let [[x y z :as coords] (take 3 point)
         maxc (apply max (map (fn [^double coord]
                                (Math/abs coord))

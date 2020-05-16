@@ -62,7 +62,7 @@
 (defn colour-pattern
   [c]
   (pattern
-    (fn [point]
+    (fn [_point]
       c)))
 (s/fdef colour-pattern
   :args (s/cat :c ::colour/colour)

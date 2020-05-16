@@ -185,7 +185,7 @@
         comps (i/prepare-computations (second xs) r xs)]
     (is (approx 0.04 (i/schlick-reflectance comps)))))
 
-(deftest the-schlick-approximation-with-a-perpendicular-viewing-angle
+(deftest the-schlick-approximation-with-a-perpendicular-viewing-angle-2
   (let [shape (shape/with-material (sphere/sphere) glass)
         r (ray/ray (tup/point 0 0.99 -2)
                    (tup/vector 0 0 1))

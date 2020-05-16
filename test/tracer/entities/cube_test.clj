@@ -1,5 +1,5 @@
 (ns tracer.entities.cube-test
-  (:require [clojure.test :refer (deftest testing is are)]
+  (:require [clojure.test :refer (deftest are)]
             [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.intersection :as i]

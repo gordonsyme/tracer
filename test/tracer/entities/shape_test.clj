@@ -34,7 +34,7 @@
   [])
 
 (defmethod shape/local-normal-at :test-shape
-  [s p]
+  [_s p]
   (tup/vector (tup/x p) (tup/y p) (tup/z p)))
 
 (deftest shape-transformations

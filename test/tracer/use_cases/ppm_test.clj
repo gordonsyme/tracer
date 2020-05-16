@@ -1,5 +1,6 @@
 (ns tracer.use-cases.ppm-test
   (:require [clojure.test :refer (deftest testing is)]
+            [clojure.java.io :as io]
             [tracer.fixtures :refer (instrument)]
             [tracer.entities.canvas :as canvas]
             [tracer.entities.colour :as colour]
@@ -52,5 +53,5 @@
         c (assoc
             (canvas/canvas width height)
             ::canvas/pixels (vec (repeat (* width height) (colour/colour 1 0.8 0.6))))]
-    (with-open [s (clojure.java.io/output-stream (java.io.File. "/dev/null"))]
+    (with-open [s (io/output-stream (java.io.File. "/dev/null"))]
       (ppm/generate c s))))

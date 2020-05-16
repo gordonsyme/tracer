@@ -23,7 +23,7 @@
   :ret ::plane)
 
 (defmethod shape/local-intersect :plane
-  [s ray]
+  [_s ray]
   (if (< (Math/abs ^double (tup/y (ray/direction ray)))
          0.00001)
     []
@@ -31,5 +31,5 @@
         (tup/y (ray/direction ray)))]))
 
 (defmethod shape/local-normal-at :plane
-  [s p]
+  [_s _p]
   (tup/vector 0 1 0))
