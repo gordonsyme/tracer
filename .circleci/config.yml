@@ -12,6 +12,9 @@ jobs:
       - checkout
       - run: lein test
       - run: lein cloverage --ns-exclude-regex "^putting-together.*"
+      - store_artifacts:
+          path: target/coverage
+          destination: coverage
 
 workflows:
   version: 2
