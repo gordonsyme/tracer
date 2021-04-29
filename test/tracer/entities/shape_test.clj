@@ -3,9 +3,11 @@
             [clojure.spec.alpha :as s]
             [tracer.comparators :refer (approx)]
             [tracer.fixtures :refer (instrument)]
+            [tracer.entities.group :as group]
             [tracer.entities.material :as material]
             [tracer.entities.ray :as ray]
             [tracer.entities.shape :as shape]
+            [tracer.entities.sphere :as sphere]
             [tracer.entities.transform :as transform]
             [tracer.entities.tuple :as tup]))
 
@@ -88,7 +90,7 @@
     (let [s (shape/with-transform (test-shape)
                                   (transform/translation 0 1 0))]
       (is (approx (tup/vector 0 0.70711 -0.70711)
-                  (shape/normal-at s (tup/point 0 1.70711 -0.70711))))))
+                  (shape/normal-at (shape/relations) s (tup/point 0 1.70711 -0.70711))))))
 
   (testing "computing the normal on a transformed shape"
     (let [root-2-over-2 (/ (Math/sqrt 2) 2)
@@ -98,4 +100,60 @@
                   (transform/rotate-z (/ Math/PI 5))
                   (transform/scale 1 0.5 1)))]
       (is (approx (tup/vector 0 0.97014 -0.24254)
-                  (shape/normal-at s (tup/point 0 root-2-over-2 (- root-2-over-2))))))))
+                  (shape/normal-at (shape/relations) s (tup/point 0 root-2-over-2 (- root-2-over-2))))))))
+
+(deftest a-shape-has-a-parent-attribute
+  (let [s (sphere/sphere)
+        rels (shape/relations)]
+    (is (nil? (shape/parent rels s)))))
+
+(deftest converting-a-point-from-world-to-object-space-with-groups
+  (let [g1 (shape/with-transform
+             (group/group)
+             (transform/rotation-y (/ Math/PI 2)))
+        g2 (shape/with-transform
+             (group/group)
+             (transform/scaling 2 2 2))
+        s (shape/with-transform
+            (sphere/sphere)
+            (transform/translation 5 0 0))
+        rels (-> (shape/relations)
+                 (group/add-child g1 g2)
+                 (group/add-child g2 s))]
+    (is (approx (tup/point 0 0 -1)
+                (shape/world-to-object rels s (tup/point -2 0 -10))))))
+
+(deftest converting-a-normal-from-object-to-world-space
+  (let [root-3-over-3 (/ (Math/sqrt 3) 3)
+        g1 (shape/with-transform
+             (group/group)
+             (transform/rotation-y (/ Math/PI 2)))
+        g2 (shape/with-transform
+             (group/group)
+             (transform/scaling 1 2 3))
+        s (shape/with-transform
+            (sphere/sphere)
+            (transform/translation 5 0 0))
+        rels (-> (shape/relations)
+                 (group/add-child g1 g2)
+                 (group/add-child g2 s))]
+    (is (approx (tup/vector 0.28571 0.42857 -0.85714)
+                (shape/normal-to-world rels s (tup/vector root-3-over-3
+                                                          root-3-over-3
+                                                          root-3-over-3))))))
+
+(deftest finding-the-normal-on-a-child-object
+  (let [g1 (shape/with-transform
+             (group/group)
+             (transform/rotation-y (/ Math/PI 2)))
+        g2 (shape/with-transform
+             (group/group)
+             (transform/scaling 1 2 3))
+        s (shape/with-transform
+            (sphere/sphere)
+            (transform/translation 5 0 0))
+        rels (-> (shape/relations)
+                 (group/add-child g1 g2)
+                 (group/add-child g2 s))]
+    (is (approx (tup/vector 0.28570 0.42854 -0.85716)
+                (shape/normal-at rels s (tup/point 1.7321 1.1547 -5.5774))))))

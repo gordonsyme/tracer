@@ -97,13 +97,13 @@
                   (refraction-boundaries is)))))
 
 (defn prepare-computations
-  ([hit r]
-   (prepare-computations hit r [hit]))
-  ([hit r is]
+  ([rels hit r]
+   (prepare-computations rels hit r [hit]))
+  ([rels hit r is]
    (let [{:keys [t object]} hit
          point (r/position r t)
          eye (tup/negate (:direction r))
-         normal (shape/normal-at object point)
+         normal (shape/normal-at rels object point)
          inside (neg? (tup/dot normal eye))
          normalv (if inside
                    (tup/negate normal)
@@ -126,9 +126,11 @@
       :n2 n2})))
 (s/fdef prepare-computations
   :args (s/alt
-          :base (s/cat :i ::intersection
+          :base (s/cat :rels ::shape/relations
+                       :i ::intersection
                        :r ::r/ray)
-          :intersections (s/cat :i ::intersection
+          :intersections (s/cat :rels ::shape/relations
+                                :i ::intersection
                                 :r ::r/ray
                                 :is (s/coll-of ::intersection)))
   :ret ::computations)

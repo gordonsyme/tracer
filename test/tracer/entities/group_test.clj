@@ -16,17 +16,12 @@
            (:transform g)))
     (is (empty? (group/children (shape/relations) g)))))
 
-(deftest a-shape-has-a-parent-attribute
-  (let [s (sphere/sphere)
-        rels (shape/relations)]
-    (is (nil? (group/parent rels s)))))
-
 (deftest adding-a-child-to-a-group
   (let [s (sphere/sphere)
         g (group/group)
         rels (group/add-child (shape/relations) g s)]
     (is (= [s] (group/children rels g)))
-    (is (= g (group/parent rels s)))))
+    (is (= g (shape/parent rels s)))))
 
 (deftest intersecting-a-ray-with-an-empty-group
   (let [g (group/group)
@@ -47,3 +42,14 @@
         r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1))]
     (is (= [s2 s2 s1 s1]
            (map :object (shape/intersect rels g r))))))
+
+(deftest intersecting-a-transformed-group
+  (let [rels (shape/relations)
+        g (shape/with-transform (group/group)
+                                (transform/scaling 2 2 2))
+        s (shape/with-transform (sphere/sphere)
+                                (transform/translation 5 0 0))
+        rels (group/add-child rels g s)]
+    (is (= 2
+           (count (shape/intersect rels g (ray/ray (tup/point 10 0 -10)
+                                                   (tup/vector 0 0 1))))))))

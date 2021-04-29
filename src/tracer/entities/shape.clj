@@ -38,6 +38,14 @@
 (s/fdef relations
   :ret ::relations)
 
+(defn parent
+  [relations shape]
+  (get-in relations [shape :parent]))
+(s/fdef parent
+  :args (s/cat :relations ::relations
+               :shape ::object)
+  :ret (s/nilable ::object))
+
 ;; Shape fns
 (defn- same-tag?
   [spec-data]
@@ -110,6 +118,39 @@
                :ray ::ray/ray)
   :ret ::intersections)
 
+(defn world-to-object
+  [rels obj point]
+  (mat/mult (inverse-transform obj)
+            (if-let [p (parent rels obj)]
+              (world-to-object rels p point)
+              point)))
+(s/fdef world-to-object
+  :args (s/cat :rels ::relations
+               :obj ::object
+               :point ::tup/point)
+  :ret ::tup/point)
+
+(defn normal-to-world
+  [rels obj normal]
+  (let [inv-transform (inverse-transform obj)
+        transformed-normal (tup/normalise
+                             ;; Setting w=0.0 is a hack to account for transposes of translations
+                             ;; mucking with the w coordinate of vectors.
+                             ;; The correct thing to do is multiply by the inverse of (submatrix
+                             ;; transform 3 3) but that reduces 4-component tuples down to 3-component
+                             ;; tuples.
+                             (assoc (mat/mult (mat/transpose inv-transform) normal)
+                                    3
+                                    0.0))]
+    (if-let [p (parent rels obj)]
+      (normal-to-world rels p transformed-normal)
+      transformed-normal)))
+(s/fdef normal-to-world
+  :args (s/cat :rels ::relations
+               :obj ::object
+               :normal ::tup/vector)
+  :ret ::tup/vector)
+
 (defmulti local-normal-at
   "Find the normal at a given point on `obj`, in object-space."
   (fn [obj _point]
@@ -120,20 +161,13 @@
   :ret ::tup/vector)
 
 (defn normal-at
-  [obj point]
-  (let [inv-transform (inverse-transform obj)
-        object-point (mat/mult inv-transform point)
-        object-normal (local-normal-at obj object-point)]
-    (tup/normalise
-      ;; Setting w=0.0 is a hack to account for transposes of translations
-      ;; mucking with the w coordinate of vectors.
-      ;; The correct thing to do is multiply by the inverse of (submatrix
-      ;; transform 3 3) but that reduces 4-component tuples down to 3-component
-      ;; tuples.
-      (assoc (mat/mult (mat/transpose inv-transform) object-normal)
-             3
-             0.0))))
+  [rels obj point]
+  (->> point
+       (world-to-object rels obj)
+       (local-normal-at obj)
+       (normal-to-world rels obj)))
 (s/fdef normal-at
-  :args (s/cat :o ::object
+  :args (s/cat :rels ::relations
+               :o ::object
                :p ::tup/point)
   :ret ::tup/vector)

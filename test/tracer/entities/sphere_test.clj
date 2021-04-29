@@ -67,21 +67,21 @@
   (let [s (sphere/sphere)]
     (testing "the normal on a sphere at a point on the x axis"
       (is (= (tup/vector 1 0 0)
-             (shape/normal-at s (tup/point 1 0 0)))))
+             (shape/normal-at (shape/relations) s (tup/point 1 0 0)))))
     (testing "the normal on a sphere at a point on the y axis"
       (is (= (tup/vector 0 1 0)
-             (shape/normal-at s (tup/point 0 1 0)))))
+             (shape/normal-at (shape/relations) s (tup/point 0 1 0)))))
     (testing "the normal on a sphere at a point on the z axis"
       (is (= (tup/vector 0 0 1)
-             (shape/normal-at s (tup/point 0 0 1)))))
+             (shape/normal-at (shape/relations) s (tup/point 0 0 1)))))
     (testing "the normal on a sphere at a nonaxial point"
       (let [v (/ (Math/sqrt 3) 3)]
         (is (= (tup/vector v v v)
-               (shape/normal-at s (tup/point v v v))))))
+               (shape/normal-at (shape/relations) s (tup/point v v v))))))
 
     (testing "normals are normalised"
       (let [v (/ (Math/sqrt 3) 3)
-            n (shape/normal-at s (tup/point v v v))]
+            n (shape/normal-at (shape/relations) s (tup/point v v v))]
         (is (= n (tup/normalise n)))))))
 
 (deftest normals-on-transformed-spheres
@@ -89,7 +89,7 @@
     (let [s (shape/with-transform (sphere/sphere)
                                   (transform/translation 0 1 0))]
       (is (approx (tup/vector 0 0.70711 -0.70711)
-                  (shape/normal-at s (tup/point 0 1.70711 -0.70711))))))
+                  (shape/normal-at (shape/relations) s (tup/point 0 1.70711 -0.70711))))))
 
   (testing "normal on a transformed sphere"
     (let [s (shape/with-transform (sphere/sphere)
@@ -97,4 +97,4 @@
                                       (transform/scale 1 0.5 1)))
           root-2-over-2 (/ (Math/sqrt 2) 2)]
       (is (approx (tup/vector 0 0.97014 -0.24254)
-                  (shape/normal-at s (tup/point 0 root-2-over-2 (- root-2-over-2))))))))
+                  (shape/normal-at (shape/relations) s (tup/point 0 root-2-over-2 (- root-2-over-2))))))))

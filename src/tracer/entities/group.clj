@@ -42,14 +42,6 @@
                :group ::group)
   :ret ::shape/children)
 
-(defn parent
-  [relations shape]
-  (get-in relations [shape :parent]))
-(s/fdef parent
-  :args (s/cat :relations ::shape/relations
-               :shape ::shape/object)
-  :ret (s/nilable ::shape/object))
-
 (defmethod shape/local-intersect :group
   [rels g ray]
   (->> (children rels g)

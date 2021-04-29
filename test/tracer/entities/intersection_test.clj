@@ -66,7 +66,7 @@
   (let [r (ray/ray (tup/point 0 0 -5) (tup/vector 0 0 1) 4)
         shape (sphere/sphere)
         i (i/intersection 4 shape)
-        comps (i/prepare-computations i r)]
+        comps (i/prepare-computations (shape/relations) i r)]
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 -1)
@@ -85,7 +85,7 @@
   (let [r (ray/ray (tup/point 0 0 0) (tup/vector 0 0 1) 4)
         shape (sphere/sphere)
         i (i/intersection 1 shape)
-        comps (i/prepare-computations i r)]
+        comps (i/prepare-computations (shape/relations) i r)]
     (is (= {:t (:t i)
             :object (:object i)
             :point (tup/point 0 0 1)
@@ -105,7 +105,7 @@
         shape (shape/with-transform (sphere/sphere)
                                     (transform/translation 0 0 1))
         i (i/intersection 5 shape)
-        comps (i/prepare-computations i r)]
+        comps (i/prepare-computations (shape/relations) i r)]
     (is (> (tup/z (:over-point comps))
            -0.00001))
     (is (> (tup/z (:point comps))
@@ -117,7 +117,7 @@
         r (ray/ray (tup/point 0 1 -1)
                    (tup/vector 0 (- root-2-over-2) root-2-over-2))
         i (i/intersection (Math/sqrt 2) shape)
-        comps (i/prepare-computations i r)]
+        comps (i/prepare-computations (shape/relations) i r)]
     (is (= (tup/vector 0 root-2-over-2 root-2-over-2)
            (:reflectv comps)))))
 
@@ -143,7 +143,7 @@
              (i/intersection 5.25 c)
              (i/intersection 6 a))]
     (are [index n1 n2]
-         (let [comps (i/prepare-computations (nth is index) r is)]
+         (let [comps (i/prepare-computations (shape/relations) (nth is index) r is)]
            (and (= n1 (:n1 comps))
                 (= n2 (:n2 comps))))
       0 1.0 1.5
@@ -160,7 +160,7 @@
                   (shape/with-transform (transform/translation 0 0 1))
                   (shape/with-material glass))
         i (i/intersection 5 shape)
-        comps (i/prepare-computations i r (i/intersections i))]
+        comps (i/prepare-computations (shape/relations) i r (i/intersections i))]
     (is (< (tup/z (:under-point comps))
            0.00001))
     (is (< (tup/z (:point comps))
@@ -173,7 +173,7 @@
                    (tup/vector 0 1 0))
         xs (i/intersections (i/intersection (- root-2-over-2) shape)
                             (i/intersection root-2-over-2 shape))
-        comps (i/prepare-computations (second xs) r xs)]
+        comps (i/prepare-computations (shape/relations) (second xs) r xs)]
     (is (= 1.0 (i/schlick-reflectance comps)))))
 
 (deftest the-schlick-approximation-with-a-perpendicular-viewing-angle
@@ -182,7 +182,7 @@
                    (tup/vector 0 1 0))
         xs (i/intersections (i/intersection -1 shape)
                             (i/intersection 1 shape))
-        comps (i/prepare-computations (second xs) r xs)]
+        comps (i/prepare-computations (shape/relations) (second xs) r xs)]
     (is (approx 0.04 (i/schlick-reflectance comps)))))
 
 (deftest the-schlick-approximation-with-a-perpendicular-viewing-angle-2
@@ -190,5 +190,5 @@
         r (ray/ray (tup/point 0 0.99 -2)
                    (tup/vector 0 0 1))
         xs (i/intersections (i/intersection 1.8589 shape))
-        comps (i/prepare-computations (first xs) r xs)]
+        comps (i/prepare-computations (shape/relations) (first xs) r xs)]
     (is (approx 0.48873 (i/schlick-reflectance comps)))))

@@ -168,7 +168,7 @@
   (let [is (intersect w r)
         hit (i/hit is)]
     (if hit
-      (shade-hit w (i/prepare-computations hit r is))
+      (shade-hit w (i/prepare-computations (relations w) hit r is))
       (colour/colour 0 0 0))))
 (s/fdef colour-at
   :args (s/cat :w ::world

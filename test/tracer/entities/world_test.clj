@@ -57,7 +57,7 @@
 (deftest shading-an-intersection
   (let [w (default-world)
         shape (first (world/objects w))
-        comps (i/prepare-computations (i/intersection 4 shape)
+        comps (i/prepare-computations (world/relations w) (i/intersection 4 shape)
                                       (ray/ray (tup/point 0 0 -5)
                                                (tup/vector 0 0 1)))]
     (is (approx (colour/colour 0.38066 0.47583 0.2855)
@@ -68,7 +68,7 @@
                  :lights [(light/point-light (tup/point 0 0.25 0)
                                              (colour/colour 1 1 1))])
         shape (second (world/objects w))
-        comps (i/prepare-computations (i/intersection 0.5 shape)
+        comps (i/prepare-computations (world/relations w) (i/intersection 0.5 shape)
                                       (ray/ray (tup/point 0 0 0)
                                                (tup/vector 0 0 1)))]
     (is (approx (colour/colour 0.90498 0.90498 0.90498)
@@ -86,7 +86,7 @@
               (world/add-object s2))
         r (ray/ray (tup/point 0 0 5)
                    (tup/vector 0 0 1))
-        comps (i/prepare-computations (i/intersection 4 s2) r)]
+        comps (i/prepare-computations (world/relations w) (i/intersection 4 s2) r)]
     (is (= (colour/colour 0.1 0.1 0.1)
            (#'world/shade-hit w comps)))))
 
@@ -108,7 +108,7 @@
               (world/add-object s))
         r (ray/ray (tup/point 0 0 5)
                    (tup/vector 0 0 1))
-        comps (i/prepare-computations (i/intersection 4 s) r)]
+        comps (i/prepare-computations (world/relations w) (i/intersection 4 s) r)]
     (is (approx (colour/colour 0.2 0.2 0.2)
                 (#'world/shade-hit w comps)))))
 
@@ -157,7 +157,7 @@
             shape (let [s (second (world/objects w))]
                     (shape/with-material s
                       (material/with-ambient (shape/material s) 1)))
-            comps (i/prepare-computations (i/intersection 1 shape) r)]
+            comps (i/prepare-computations (world/relations w) (i/intersection 1 shape) r)]
         (is (= (colour/colour 0 0 0)
                (world/reflected-colour w comps)))))
 
@@ -171,7 +171,7 @@
             w (world/add-object w shape)
             r (ray/ray (tup/point 0 0 -3)
                        (tup/vector 0 (- root-2-over-2) root-2-over-2))
-            comps (i/prepare-computations (i/intersection (Math/sqrt 2) shape) r)]
+            comps (i/prepare-computations (world/relations w) (i/intersection (Math/sqrt 2) shape) r)]
         (is (approx (colour/colour 0.19033 0.23791 0.14274)
                     (world/reflected-colour w comps)))))
 
@@ -185,7 +185,7 @@
             w (world/add-object w shape)
             r (ray/ray (tup/point 0 0 -3)
                        (tup/vector 0 (- root-2-over-2) root-2-over-2))
-            comps (i/prepare-computations (i/intersection (Math/sqrt 2) shape) r)]
+            comps (i/prepare-computations (world/relations w) (i/intersection (Math/sqrt 2) shape) r)]
 
         (is (approx (colour/colour 0.87676 0.92434 0.82917)
                     (#'world/shade-hit w comps)))))))
@@ -221,6 +221,7 @@
                    (tup/vector 0 (- root-2-over-2) root-2-over-2)
                    1)
         comps (i/prepare-computations
+                (world/relations w)
                 (i/intersection (Math/sqrt 2) s)
                 r)]
     (is (= (colour/colour 0 0 0)
@@ -233,7 +234,7 @@
                    (tup/vector 0 0 1))
         xs (i/intersections (i/intersection 4 shape)
                             (i/intersection 6 shape))
-        comps (i/prepare-computations (first xs) r xs)]
+        comps (i/prepare-computations (world/relations w) (first xs) r xs)]
     (is (= (colour/colour 0 0 0)
            (world/refracted-colour w comps)))))
 
@@ -250,7 +251,7 @@
                    1)
         xs (i/intersections (i/intersection 4 shape)
                             (i/intersection 6 shape))
-        comps (i/prepare-computations (first xs) r xs)]
+        comps (i/prepare-computations (world/relations w) (first xs) r xs)]
     (is (= (colour/colour 0 0 0)
            (world/refracted-colour w comps)))))
 
@@ -267,7 +268,7 @@
                    (tup/vector 0 1 0))
         xs (i/intersections (i/intersection (- root-2-over-2) shape)
                             (i/intersection root-2-over-2 shape))
-        comps (i/prepare-computations (second xs) r xs)]
+        comps (i/prepare-computations (world/relations w) (second xs) r xs)]
     (is (= (colour/colour 0 0 0)
            (world/refracted-colour w comps)))))
 
@@ -293,7 +294,7 @@
              (i/intersection -0.4899 b)
              (i/intersection 0.4899 b)
              (i/intersection 0.9899 a))
-        comps (i/prepare-computations (nth xs 2) r xs)]
+        comps (i/prepare-computations (world/relations w) (nth xs 2) r xs)]
     (is (approx (colour/colour 0 0.99888 0.04721)
                 (world/refracted-colour w comps)))))
 
@@ -315,7 +316,7 @@
         r (ray/ray (tup/point 0 0 -3)
                    (tup/vector 0 (- root-2-over-2) root-2-over-2))
         xs (i/intersections (i/intersection (Math/sqrt 2) floor))
-        comps (i/prepare-computations (first xs) r xs)]
+        comps (i/prepare-computations (world/relations w) (first xs) r xs)]
     (is  (approx (colour/colour 0.93642 0.68642 0.68642)
                  (#'world/shade-hit w comps)))))
 
@@ -338,6 +339,6 @@
         r (ray/ray (tup/point 0 0 -3)
                    (tup/vector 0 (- root-2-over-2) root-2-over-2))
         xs (i/intersections (i/intersection (Math/sqrt 2) floor))
-        comps (i/prepare-computations (first xs) r xs)]
+        comps (i/prepare-computations (world/relations w) (first xs) r xs)]
     (is  (approx (colour/colour 0.93391 0.69643 0.69243)
                  (#'world/shade-hit w comps)))))

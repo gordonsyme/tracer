@@ -25,7 +25,7 @@
                                 light
                                 point
                                 eye
-                                (sphere/normal-at (:object hit) point))]))))
+                                (sphere/normal-at rels (:object hit) point))]))))
 
 (defn go
   [file-name]
