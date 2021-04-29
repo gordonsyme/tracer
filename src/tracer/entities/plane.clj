@@ -22,13 +22,21 @@
 (s/fdef plane
   :ret ::plane)
 
-(defmethod shape/local-intersect :plane
-  [_s ray]
+(defn- local-intersect
+  [ray]
   (if (< (Math/abs ^double (tup/y (ray/direction ray)))
          0.00001)
     []
     [(/ (- (tup/y (ray/origin ray)))
         (tup/y (ray/direction ray)))]))
+(s/fdef local-intersect
+  :args (s/cat :ray ::ray/ray)
+  :ret (s/coll-of ::shape/t))
+
+(defmethod shape/local-intersect :plane
+  [plane ray]
+  (map (partial hash-map :object plane :t)
+       (local-intersect ray)))
 
 (defmethod shape/local-normal-at :plane
   [_s _p]

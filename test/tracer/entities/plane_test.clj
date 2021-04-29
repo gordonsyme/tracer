@@ -33,9 +33,9 @@
   (testing "a ray intersecting a plane from above"
     (let [p (plane/plane)
           r (ray/ray (tup/point 0 1 0) (tup/vector 0 -1 0))]
-      (is (= [1.0] (shape/local-intersect p r)))))
+      (is (= [1.0] (map :t (shape/local-intersect p r))))))
 
   (testing "a ray intersecting a plane from below"
     (let [p (plane/plane)
           r (ray/ray (tup/point 0 -1 0) (tup/vector 0 1 0))]
-      (is (= [1.0] (shape/local-intersect p r))))))
+      (is (= [1.0] (map :t (shape/local-intersect p r)))))))

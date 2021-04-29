@@ -5,10 +5,10 @@
             [tracer.entities.shape :as shape]
             [tracer.entities.tuple :as tup]))
 
-(s/def ::t number?)
+(s/def ::t ::shape/t)
 
-(s/def ::intersection (s/keys :req-un [::t ::shape/object]))
-(s/def ::intersections (s/coll-of ::intersection))
+(s/def ::intersection ::shape/intersection)
+(s/def ::intersections ::shape/intersections)
 
 (s/def ::eyev ::tup/vector)
 (s/def ::normalv ::tup/vector)
@@ -41,8 +41,7 @@
 
 (defn intersect
   [obj ray]
-  (map (partial hash-map :object obj :t)
-       (shape/intersect obj ray)))
+  (shape/intersect obj ray))
 (s/fdef intersect
   :args (s/cat :obj ::shape/object
                :r ::r/ray)

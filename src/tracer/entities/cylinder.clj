@@ -76,7 +76,7 @@
                  [(:minimum c) (:maximum c)])]
         (filter (partial check-cap r) ts)))))
 
-(defmethod shape/local-intersect :cylinder
+(defn- local-intersect
   [cyl ray]
   (let [origin (ray/origin ray)
         direction (ray/direction ray)
@@ -110,6 +110,15 @@
                             (* t (tup/y direction)))
                          (:maximum cyl)))
                     ts)))))))
+(s/fdef local-intersect
+  :args (s/cat :cylinder ::cylinder
+               :ray ::ray/ray)
+  :ret (s/coll-of ::shape/t))
+
+(defmethod shape/local-intersect :cylinder
+  [cyl ray]
+  (map (partial hash-map :object cyl :t)
+       (local-intersect cyl ray)))
 
 (defmethod shape/local-normal-at :cylinder
   [c point]

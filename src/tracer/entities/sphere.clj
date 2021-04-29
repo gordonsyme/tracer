@@ -21,8 +21,8 @@
 (s/fdef sphere
   :ret ::sphere)
 
-(defmethod shape/local-intersect :sphere
-  [_s ray]
+(defn- local-intersect
+  [ray]
   (let [sphere-to-ray (tup/sub (ray/origin ray) (tup/point 0 0 0))
         a (tup/dot (ray/direction ray) (ray/direction ray))
         b (* 2 (tup/dot (ray/direction ray)
@@ -37,6 +37,14 @@
             (* 2 a))
          (/ (+ (- b) root)
             (* 2 a))]))))
+(s/fdef local-intersect
+  :args (s/cat :ray ::ray/ray)
+  :ret (s/coll-of ::shape/t))
+
+(defmethod shape/local-intersect :sphere
+  [s ray]
+  (map (partial hash-map :object s :t)
+       (local-intersect ray)))
 
 (defmethod shape/local-normal-at :sphere
   [_s p]

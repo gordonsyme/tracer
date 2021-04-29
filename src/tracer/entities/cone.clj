@@ -79,7 +79,7 @@
              (filter (partial check-cap r))
              (map second))))))
 
-(defmethod shape/local-intersect :cone
+(defn- local-intersect
   [cone ray]
   (let [origin (ray/origin ray)
         direction (ray/direction ray)
@@ -130,6 +130,15 @@
                             (* t (tup/y direction)))
                          (:maximum cone)))
                     ts)))))))
+(s/fdef local-intersect
+  :args (s/cat :cone ::cone
+               :ray ::ray/ray)
+  :ret (s/coll-of ::shape/t))
+
+(defmethod shape/local-intersect :cone
+  [cone ray]
+  (map (partial hash-map :object cone :t)
+       (local-intersect cone ray)))
 
 (defmethod shape/local-normal-at :cone
   [c point]

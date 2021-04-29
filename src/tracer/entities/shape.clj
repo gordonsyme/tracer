@@ -16,6 +16,9 @@
 (defmulti object-type ::tag)
 (s/def ::object (s/multi-spec object-type ::tag))
 
+(s/def ::t number?)
+(s/def ::intersection (s/keys :req-un [::t ::object]))
+(s/def ::intersections (s/coll-of ::intersection))
 
 (defn- same-tag?
   [spec-data]
@@ -74,7 +77,7 @@
 (s/fdef local-intersect
   :args (s/cat :obj ::object
                :ray ::ray/ray)
-  :ret (s/coll-of number?))
+  :ret ::intersections)
 
 (defn intersect
   [obj ray]
@@ -83,7 +86,7 @@
 (s/fdef intersect
   :args (s/cat :obj ::object
                :ray ::ray/ray)
-  :ret (s/coll-of number?))
+  :ret ::intersections)
 
 (defmulti local-normal-at
   "Find the normal at a given point on `obj`, in object-space."
