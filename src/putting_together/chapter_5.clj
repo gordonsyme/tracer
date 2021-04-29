@@ -16,6 +16,7 @@
   (let [width 200
         height 200
         light (tup/point 0 0 5)
+        rels (shape/relations)
         sphere (shape/with-transform (sphere/sphere)
                                      (-> (t/scaling 1 1 1)
                                          (t/shear :xy 1)
@@ -42,7 +43,7 @@
                  (fn [c [x y]]
                    (let [target (t/apply canvas-to-world (tup/point x y -5))
                          r (ray/ray light (tup/normalise (tup/sub target light)))]
-                     (if (i/hit (i/intersect sphere r))
+                     (if (i/hit (i/intersect rels sphere r))
                        (canvas/write-pixel c x y (colour/colour 1.0 0 0))
                        c)))
                  (canvas/canvas width height)

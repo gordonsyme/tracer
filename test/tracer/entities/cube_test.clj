@@ -14,7 +14,7 @@
   (let [c (cube/cube)]
     (are [origin direction t1 t2]
          (let [r (ray/ray origin direction)
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (= [(double t1) (double t2)]
               (map :t xs)))
       ;; +/- direction vectors
@@ -31,7 +31,7 @@
   (let [c (cube/cube)]
     (are [origin direction]
          (let [r (ray/ray origin direction)
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (empty? xs))
       ;; +/- direction vectors
       (tup/point -2  0  0) (tup/vector 0.2673 0.5345 0.8018)

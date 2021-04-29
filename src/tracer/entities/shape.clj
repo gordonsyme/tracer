@@ -16,10 +16,29 @@
 (defmulti object-type ::tag)
 (s/def ::object (s/multi-spec object-type ::tag))
 
+;; Intersections
 (s/def ::t number?)
 (s/def ::intersection (s/keys :req-un [::t ::object]))
 (s/def ::intersections (s/coll-of ::intersection))
 
+;; Relations between shapes, these need to be defined here because
+;; 1. relations need to refer to shape specs
+;; 2. `intersect` and `local-intersect` needs to refer to relation specs
+(s/def ::parent (s/nilable ::object))
+(s/def ::children (s/coll-of ::object))
+(s/def ::group-relation (s/keys :req-un [::parent ::children]))
+(s/def ::shape-relation (s/keys :req-un [::parent]))
+
+(s/def ::relations (s/map-of ::object (s/or :group ::group-relation
+                                            :shape ::shape-relation)))
+
+(defn relations
+  []
+  {})
+(s/fdef relations
+  :ret ::relations)
+
+;; Shape fns
 (defn- same-tag?
   [spec-data]
   (= (-> spec-data :ret ::tag)
@@ -68,23 +87,26 @@
 (defmulti local-intersect
   "Intersect a ray with an object.
 
+  `rels` - the relationships between groups and shapes
   `obj` - the shape being intersected with
   `ray` - the ray transformed into *object-space*
 
   Returns a collection of t values"
-  (fn [obj _ray]
+  (fn [_rels obj _ray]
     (::tag obj)))
 (s/fdef local-intersect
-  :args (s/cat :obj ::object
+  :args (s/cat :rels ::relations
+               :obj ::object
                :ray ::ray/ray)
   :ret ::intersections)
 
 (defn intersect
-  [obj ray]
+  [rels obj ray]
   (let [object-space-ray (ray/transform ray (inverse-transform obj))]
-    (local-intersect obj object-space-ray)))
+    (local-intersect rels obj object-space-ray)))
 (s/fdef intersect
-  :args (s/cat :obj ::object
+  :args (s/cat :rels ::relations
+               :obj ::object
                :ray ::ray/ray)
   :ret ::intersections)
 

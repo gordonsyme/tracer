@@ -18,35 +18,35 @@
           s (sphere/sphere)]
       (is (= [{:t 4.0 :object s}
               {:t 6.0 :object s}]
-             (i/intersect s r)))))
+             (i/intersect (shape/relations) s r)))))
 
   (testing "a tangent"
     (let [r (ray/ray (tup/point 0 1 -5)
                      (tup/vector 0 0 1))
           s (sphere/sphere)]
       (is (= [{:t 5.0 :object s} {:t 5.0 :object s}]
-             (i/intersect s r)))))
+             (i/intersect (shape/relations) s r)))))
 
   (testing "the ray misses"
     (let [r (ray/ray (tup/point 0 2 -5)
                      (tup/vector 0 0 1))
           s (sphere/sphere)]
       (is (= []
-             (i/intersect s r)))))
+             (i/intersect (shape/relations) s r)))))
 
   (testing "the ray originates inside the sphere"
     (let [r (ray/ray (tup/point 0 0 0)
                      (tup/vector 0 0 1))
           s (sphere/sphere)]
       (is (= [{:t -1.0 :object s} {:t 1.0 :object s}]
-             (i/intersect s r)))))
+             (i/intersect (shape/relations) s r)))))
 
   (testing "the sphere is behind the ray"
     (let [r (ray/ray (tup/point 0 0 5)
                      (tup/vector 0 0 1))
           s (sphere/sphere)]
       (is (= [{:t -6.0 :object s} {:t -4.0 :object s}]
-             (i/intersect s r))))))
+             (i/intersect (shape/relations) s r))))))
 
 (deftest intersecting-a-scaled-sphere-with-a-ray
   (let [r (ray/ray (tup/point 0 0 -5)
@@ -54,14 +54,14 @@
         s (shape/with-transform (sphere/sphere)
                                 (transform/scaling 2 2 2))]
     (is (= [{:t 3.0 :object s} {:t 7.0 :object s}]
-           (i/intersect s r)))))
+           (i/intersect (shape/relations) s r)))))
 
 (deftest intersecting-a-translated-sphere-with-a-ray
   (let [r (ray/ray (tup/point 0 0 -5)
                    (tup/vector 0 0 1))
         s (shape/with-transform (sphere/sphere)
                                 (transform/translation 5 0 0))]
-    (is (= [] (i/intersect s r)))))
+    (is (= [] (i/intersect (shape/relations) s r)))))
 
 (deftest surface-normals
   (let [s (sphere/sphere)]

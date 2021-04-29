@@ -29,7 +29,7 @@
   :ret ::test-shape)
 
 (defmethod shape/local-intersect :test-shape
-  [s ray]
+  [_rels s ray]
   (swap! (:capture-atom s) assoc ::shape/local-intersect ray)
   [])
 
@@ -67,7 +67,7 @@
           capture (atom {})
           s (shape/with-transform (test-shape capture)
                                   (transform/scaling 2 2 2))]
-      (shape/intersect s r)
+      (shape/intersect (shape/relations) s r)
       (is (= (ray/ray (tup/point 0 0 -2.5)
                       (tup/vector 0 0 0.5))
              (::shape/local-intersect @capture)))))
@@ -78,7 +78,7 @@
           capture (atom {})
           s (shape/with-transform (test-shape capture)
                                   (transform/translation 5 0 0))]
-      (shape/intersect s r)
+      (shape/intersect (shape/relations) s r)
       (is (= (ray/ray (tup/point -5 0 -5)
                       (tup/vector 0 0 1))
              (::shape/local-intersect @capture))))))

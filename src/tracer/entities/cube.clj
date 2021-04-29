@@ -54,7 +54,7 @@
   :ret (s/coll-of ::shape/t))
 
 (defmethod shape/local-intersect :cube
-  [c ray]
+  [_rels c ray]
   (map (partial hash-map :object c :t)
        (local-intersect ray)))
 

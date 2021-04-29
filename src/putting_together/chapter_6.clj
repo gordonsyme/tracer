@@ -14,11 +14,11 @@
             [tracer.use-cases.ppm :as ppm]))
 
 (defn- compute-colour
-  [x y sphere canvas-to-world camera-pos light]
+  [x y rels sphere canvas-to-world camera-pos light]
   (let [target (t/apply canvas-to-world (tup/point x y -5))
         r (ray/ray camera-pos
                    (tup/normalise (tup/sub target camera-pos)))]
-    (when-let [hit (i/hit (i/intersect sphere r))]
+    (when-let [hit (i/hit (i/intersect rels sphere r))]
       (let [point (ray/position r (:t hit))
             eye (tup/negate (:direction r))]
         [x y (material/lighting (-> hit :object :material)
@@ -34,6 +34,7 @@
         light (light/point-light (tup/point -10 10 10)
                                  (colour/colour 1 1 1))
         camera-pos (tup/point 0 0 5)
+        rels (shape/relations)
         sphere (-> (sphere/sphere)
                    #_(shape/with-transform (-> (t/scaling 1 1 1)
                                              (t/shear :xy 1)
@@ -60,7 +61,7 @@
                                      1))
         canvas-to-world (mat/inverse world-to-canvas)
         pixels (map (fn [[x y]]
-                      (compute-colour x y sphere canvas-to-world camera-pos light))
+                      (compute-colour x y rels sphere canvas-to-world camera-pos light))
                     (for [x (range width)
                           y (range height)]
                       [x y]))

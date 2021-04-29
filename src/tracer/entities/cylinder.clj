@@ -116,7 +116,7 @@
   :ret (s/coll-of ::shape/t))
 
 (defmethod shape/local-intersect :cylinder
-  [cyl ray]
+  [_rels cyl ray]
   (map (partial hash-map :object cyl :t)
        (local-intersect cyl ray)))
 

@@ -136,7 +136,7 @@
   :ret (s/coll-of ::shape/t))
 
 (defmethod shape/local-intersect :cone
-  [cone ray]
+  [_rels cone ray]
   (map (partial hash-map :object cone :t)
        (local-intersect cone ray)))
 

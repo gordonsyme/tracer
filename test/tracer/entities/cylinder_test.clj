@@ -14,7 +14,7 @@
   (let [c (cylinder/cylinder)]
     (are [origin direction]
          (let [r (ray/ray origin direction)
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (empty? xs))
       (tup/point 1 0 0) (tup/vector 0 1 0)
       (tup/point 0 0 0) (tup/vector 0 1 0)
@@ -24,7 +24,7 @@
   (let [c (cylinder/cylinder)]
     (are [origin direction t1 t2]
          (let [r (ray/ray origin (tup/normalise direction))
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (approx [(double t1) (double t2)]
                    (map :t xs)))
       ;; origin direction t1 t2
@@ -55,7 +55,7 @@
               (cylinder/with-maximum 2))]
     (are [point direction num-xs]
          (let [r (ray/ray point (tup/normalise direction))
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (= num-xs (count xs)))
       (tup/point 0 1.5 0) (tup/vector 0.1 1 0) 0
       (tup/point 0 3 -5) (tup/vector 0 0 1) 0
@@ -74,7 +74,7 @@
               (cylinder/with-closed true))]
     (are [point direction num-xs]
          (let [r (ray/ray point (tup/normalise direction))
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (= num-xs (count xs)))
       (tup/point 0  3  0) (tup/vector 0 -1 0) 2
       (tup/point 0  3 -2) (tup/vector 0 -1 2) 2

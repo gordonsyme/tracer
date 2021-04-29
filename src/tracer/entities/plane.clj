@@ -34,7 +34,7 @@
   :ret (s/coll-of ::shape/t))
 
 (defmethod shape/local-intersect :plane
-  [plane ray]
+  [_rels plane ray]
   (map (partial hash-map :object plane :t)
        (local-intersect ray)))
 

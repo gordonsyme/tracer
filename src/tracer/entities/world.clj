@@ -14,7 +14,8 @@
 (defn world
   []
   {:objects []
-   :lights []})
+   :lights []
+   :relations {}})
 (s/fdef world
   :ret ::world)
 
@@ -31,6 +32,21 @@
 (s/fdef add-object
   :args (s/cat :w ::world
                :o ::shape/object)
+  :ret ::world)
+
+(defn relations
+  [w]
+  (:relations w))
+(s/fdef relations
+  :args (s/cat :w ::world)
+  :ret ::shape/relations)
+
+(defn add-relations
+  [w rels]
+  (assoc w :relations rels))
+(s/fdef add-relations
+  :args (s/cat :w ::world
+               :rels ::shape/relations)
   :ret ::world)
 
 (defn lights
@@ -50,7 +66,8 @@
 
 (defn intersect
   [w r]
-  (apply i/intersections (mapcat #(i/intersect % r) (objects w))))
+  (let [rels (relations w)]
+    (apply i/intersections (mapcat #(i/intersect rels % r) (objects w)))))
 (s/fdef intersect
   :args (s/cat :w ::world
                :r ::ray/ray)

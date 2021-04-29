@@ -40,10 +40,11 @@
   :ret ::intersection)
 
 (defn intersect
-  [obj ray]
-  (shape/intersect obj ray))
+  [rels obj ray]
+  (shape/intersect rels obj ray))
 (s/fdef intersect
-  :args (s/cat :obj ::shape/object
+  :args (s/cat :rels ::shape/relations
+               :obj ::shape/object
                :r ::r/ray)
   :ret ::intersections)
 

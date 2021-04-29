@@ -42,7 +42,7 @@
   :ret (s/coll-of ::shape/t))
 
 (defmethod shape/local-intersect :sphere
-  [s ray]
+  [_rels s ray]
   (map (partial hash-map :object s :t)
        (local-intersect ray)))
 

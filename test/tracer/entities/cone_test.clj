@@ -14,7 +14,7 @@
   (let [c (cone/cone)]
     (are [origin direction t0 t1]
          (let [r (ray/ray origin (tup/normalise direction))
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (approx [(double t0) (double t1)]
                    (map :t xs)))
       (tup/point 0 0 -5) (tup/vector 0 0 1)     5        5
@@ -25,7 +25,7 @@
   (let [c (cone/cone)
         direction (tup/normalise (tup/vector 0 1 1))
         r (ray/ray (tup/point 0 0 -1) direction)
-        xs (i/intersect c r)]
+        xs (i/intersect (shape/relations) c r)]
     (is (approx [0.35355] (map :t xs)))))
 
 (deftest the-default-closed-value-for-a-cone
@@ -38,7 +38,7 @@
               (cone/with-closed true))]
     (are [origin direction num-xs]
          (let [r (ray/ray origin (tup/normalise direction))
-               xs (i/intersect c r)]
+               xs (i/intersect (shape/relations) c r)]
            (= num-xs (count xs)))
       (tup/point 0 0 -5)    (tup/vector 0 1 0) 0
       (tup/point 0 0 -0.25) (tup/vector 0 1 1) 2
