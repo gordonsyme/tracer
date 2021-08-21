@@ -9,5 +9,5 @@
     (every? true? (map approx v1 v2))
 
     :else
-    (< (Math/abs (- v1 v2))
+    (< (Math/abs (- ^double v1 ^double v2))
        0.00001)))
