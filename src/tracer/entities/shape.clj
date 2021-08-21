@@ -7,10 +7,11 @@
 
 (s/def ::tag keyword?)
 
+(s/def ::id uuid?)
 (s/def ::transform ::mat/matrix)
 (s/def ::inverse-transform ::mat/matrix)
 (s/def ::material ::material/material)
-(s/def ::common (s/keys :req [::tag]
+(s/def ::common (s/keys :req [::tag ::id]
                         :req-un [::transform ::inverse-transform ::material]))
 
 (defmulti object-type ::tag)

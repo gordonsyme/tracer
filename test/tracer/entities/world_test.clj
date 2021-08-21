@@ -45,8 +45,8 @@
                                  (transform/scaling 0.5 0.5 0.5))
         w (default-world)]
     (is (= [light] (world/lights w)))
-    (is (contains? (set (world/objects w)) s1))
-    (is (contains? (set (world/objects w)) s2))))
+    (is (contains? (set (map #(dissoc % ::shape/id) (world/objects w))) (dissoc s1 ::shape/id)))
+    (is (contains? (set (map #(dissoc % ::shape/id) (world/objects w))) (dissoc s2 ::shape/id)))))
 
 (deftest intersect-a-world-with-a-ray
   (let [w (default-world)

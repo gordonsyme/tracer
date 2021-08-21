@@ -21,6 +21,7 @@
 (defn cone
   []
   {::shape/tag :cone
+   ::shape/id (java.util.UUID/randomUUID)
    :transform (transform/identity)
    :inverse-transform (transform/identity)
    :material (material/material)
