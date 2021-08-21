@@ -159,3 +159,14 @@
                        (- (Math/sqrt dist))
                        (Math/sqrt dist))]
         (tup/vector x normal-y z)))))
+
+(defmethod shape/bounds :cone
+  [_rels c]
+  ;; Cones aren't like cylinders, they get wider as they extend to infinity, so
+  ;; the x and z coordinates must depend on the y coordinate
+  ;; The cone's radius at a given point is the absolute y value.
+  (let [^double min-y (:minimum c)
+        ^double max-y (:maximum c)
+        max-radius (max (Math/abs min-y) (Math/abs max-y))]
+    {:min-bound (tup/point (- max-radius) min-y (- max-radius))
+     :max-bound (tup/point max-radius max-y max-radius)}))

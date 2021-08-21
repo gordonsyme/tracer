@@ -172,3 +172,16 @@
                :o ::object
                :p ::tup/point)
   :ret ::tup/vector)
+
+(s/def ::min-bound ::tup/point)
+(s/def ::max-bound ::tup/point)
+(s/def ::bounds (s/keys :req-un [::min-bound ::max-bound]))
+
+(defmulti bounds
+  "Return the minimum and maximum coordinates for this shape's bounding box"
+  (fn [_rels obj]
+    (::tag obj)))
+(s/fdef bounds
+  :args (s/cat :rels ::relations
+               :obj ::object)
+  :ret ::bounds)

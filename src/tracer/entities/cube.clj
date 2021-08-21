@@ -69,3 +69,8 @@
       (= maxc (Math/abs ^double x)) (tup/vector x 0 0)
       (= maxc (Math/abs ^double y)) (tup/vector 0 y 0)
       :else (tup/vector 0 0 z))))
+
+(defmethod shape/bounds :cube
+  [_rels _c]
+  {:min-bound (tup/point -1 -1 -1)
+   :max-bound (tup/point 1 1 1)})

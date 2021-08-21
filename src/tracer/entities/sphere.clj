@@ -50,3 +50,8 @@
 (defmethod shape/local-normal-at :sphere
   [_s p]
   (tup/sub p (tup/point 0 0 0)))
+
+(defmethod shape/bounds :sphere
+  [_rels _s]
+  {:min-bound (tup/point -1 -1 -1)
+   :max-bound (tup/point 1 1 1)})

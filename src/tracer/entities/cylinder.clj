@@ -136,3 +136,8 @@
 
       :else
       (tup/vector x 0 z))))
+
+(defmethod shape/bounds :cylinder
+  [_rels c]
+  {:min-bound (tup/point -1 (:minimum c) -1)
+   :max-bound (tup/point 1 (:maximum c) 1)})
